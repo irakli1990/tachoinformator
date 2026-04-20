@@ -158,26 +158,21 @@
         <input type="hidden" id="edit-msg-id"/>
         <div class="form-col">
           <div class="form-card">
-            <h3 class="form-card-title">Ustawienia generacji kodu</h3>
+            <h3 class="form-card-title">Liczba generowanych haseł</h3>
 
-            <div class="field-radio-group">
-              <label for="msg-duration" class="field-label">Ilość kodów</label><br>
-              <input type="radio" name="key-count" checked="true"><label>1</label>
-              <input type="radio" name="key-count"><label>10</label>
-              <input type="radio" name="key-count"><label>50</label>
-              <input type="radio" name="key-count"><label>100</label>
+            <div id="key-count-radio-group">
+              <input type="radio" name="key-count" id="1" checked>
+              <label for="1">1</label>
+
+              <input type="radio" name="key-count" id="10">
+              <label for="10">10</label>
+
+              <input type="radio" name="key-count" id="50">
+              <label for="50">50</label>
+
+              <input type="radio" name="key-count" id="100">
+              <label for="100">100</label>
             </div>
-          </div>
-
-          <div class="form-actions">
-            <div id="form-error" class="error-msg hidden"></div>
-            <div id="form-success" class="success-msg hidden"></div>
-            <button type="submit" class="btn btn-primary btn-full" id="submit-btn">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon">
-                <path d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
-              </svg>
-              <span id="submit-label">Generuj</span>
-            </button>
           </div>
         </div>
       </form>
@@ -323,7 +318,6 @@
         </div>
       </form>
     </section>
-
   </main>
 </div>
 
