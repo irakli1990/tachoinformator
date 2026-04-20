@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setupLoginForm();
   setupNavigation();
   setupMessageForm();
+  setupKeyForm();
   setupUploadZone();
   setupModal();
 });
@@ -290,6 +291,10 @@ function setupMessageForm() {
   document.getElementById('message-form').addEventListener('submit', submitForm);
 }
 
+function setupKeyForm(){
+  document.getElementById('key-form').addEventListener('submit', submitKeyForm);
+}
+
 function resetForm() {
   editingId    = null;
   selectedFile = null;
@@ -387,6 +392,26 @@ async function submitForm(e) {
     btn.disabled = false;
     document.getElementById('submit-label').textContent = editingId ? 'Zapisz zmiany' : 'Opublikuj komunikat';
   }
+}
+
+async function submitKeyForm(e) {
+  e.preventDefault();
+
+  const checked = document.querySelector('input[type=radio]:checked');
+  const count = checked.value;
+  const errEl       = document.getElementById('key-form-error');
+  const successEl   = document.getElementById('key-form-success');
+  const btn         = document.getElementById('key-submit-btn');
+
+  errEl.classList.add('hidden');
+  successEl.classList.add('hidden');
+
+  const keys = generateKeys(count);
+
+  keys.forEach(key => {
+    console.log(key);
+    
+  }) 
 }
 
 // ─── Upload grafiki ───────────────────────────────────────────────────────

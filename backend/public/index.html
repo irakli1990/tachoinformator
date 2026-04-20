@@ -154,25 +154,25 @@
       </div>   
 
       <!-- Górna część: Generowanie nowego kodu -->
-      <form id="message-form" class="message-form" novalidate>
+      <form id="key-form" class="key-form" novalidate>
         <input type="hidden" id="edit-msg-id"/>
         <div class="form-col">
           <div class="form-card">
             <h3 class="form-card-title">Ustawienia generacji kodu</h3>
 
             <div class="field-radio-group">
-              <label for="msg-duration" class="field-label">Ilość kodów</label><br>
-              <input type="radio" name="key-count" checked="true"><label>1</label>
-              <input type="radio" name="key-count"><label>10</label>
-              <input type="radio" name="key-count"><label>50</label>
-              <input type="radio" name="key-count"><label>100</label>
+              <label for="key-count" class="field-label">Ilość kodów</label><br>
+              <input type="radio" value="1" name="key-count" id="1key" checked="true"><label>1</label>
+              <input type="radio" value="10" name="key-count" id="10key"><label>10</label>
+              <input type="radio" value="50" name="key-count" id="50key"><label>50</label>
+              <input type="radio" value="100" name="key-count" id="100key"><label>100</label>
             </div>
           </div>
 
           <div class="form-actions">
-            <div id="form-error" class="error-msg hidden"></div>
-            <div id="form-success" class="success-msg hidden"></div>
-            <button type="submit" class="btn btn-primary btn-full" id="submit-btn">
+            <div id="key-form-error" class="error-msg hidden"></div>
+            <div id="key-form-success" class="success-msg hidden"></div>
+            <button type="submit" class="btn btn-primary btn-full" id="key-submit-btn">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon">
                 <path d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
               </svg>
@@ -189,6 +189,7 @@
           <p class="view-sub">Lista wygenerowanych kodów</p>
         </div>
       </div>
+      
       <div id="key-list" class="message-list">
         <div class="list-loading">
           <div class="spinner"></div>
