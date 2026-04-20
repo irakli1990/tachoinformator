@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setupLoginForm();
   setupNavigation();
   setupMessageForm();
-  setupKeyForm();
+  setupGenerateKeyForm();
   setupUploadZone();
   setupModal();
 });
@@ -291,8 +291,8 @@ function setupMessageForm() {
   document.getElementById('message-form').addEventListener('submit', submitForm);
 }
 
-function setupKeyForm(){
-  document.getElementById('key-form').addEventListener('submit', submitKeyForm);
+function setupGenerateKeyForm() {
+  document.getElementById('generate-key-btn').addEventListener('submit', submitGenerateKeyForm);
 }
 
 function resetForm() {
@@ -394,7 +394,7 @@ async function submitForm(e) {
   }
 }
 
-async function submitKeyForm(e) {
+async function submitGenerateKeyForm(e) {
   e.preventDefault();
 
   const checked = document.querySelector('input[type=radio]:checked');
@@ -410,7 +410,6 @@ async function submitKeyForm(e) {
 
   keys.forEach(key => {
     console.log(key);
-    
   }) 
 }
 

@@ -291,7 +291,7 @@ html, body {
 .btn-danger { background: #DC2626; color: #fff; }
 .btn-danger:hover { background: #B91C1C; }
 
-.btn-full { width: 100%; justify-content: center; padding: 12px 24px; font-size: 14px; }
+.btn-full { width: 100%; justify-content: center; padding: 12px 24px; font-size: 14px; margin: 5px; }
 
 .btn-icon { width: 16px; height: 16px; }
 
