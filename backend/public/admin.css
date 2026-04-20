@@ -1,6 +1,6 @@
 /* ╔══════════════════════════════════════════════════════════╗
    ║  ClientPulse – Admin Panel CSS                           ║
-   ║  Kolorystyka: #C41E3A (czerwień), #FFF, #F5F5F5 (szarość) ║
+   ║  Kolorystyka: #C41E3A (czerwień), #FFF, #F5F5F5 (szarość)║
    ╚══════════════════════════════════════════════════════════╝ */
 
 /* ─── Reset & Tokens ───────────────────────────────────────── */
@@ -255,6 +255,7 @@ html, body {
   gap: 16px;
 }
 
+
 .view-title { font-size: 22px; font-weight: 700; color: var(--gray-900); line-height: 1.2; }
 .view-sub { font-size: 13.5px; color: var(--gray-500); margin-top: 4px; }
 
@@ -296,6 +297,7 @@ html, body {
 
 /* ─── FIELDS ───────────────────────────────────────────────── */
 .field-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 20px; }
+.field-radio-group {display: flex; flex-direction: row; gap: 6px; margin-bottom: 20px; }
 .field-label { font-size: 13px; font-weight: 600; color: var(--gray-700); }
 .required { color: var(--red); }
 

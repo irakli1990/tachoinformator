@@ -143,6 +143,7 @@ function navigateTo(view) {
   const viewMap = {
     'active':      'view-active',
     'archived':    'view-archived',
+    'generate-key':       'view-generate-key',
     'new-message': 'view-new-message'
   };
 

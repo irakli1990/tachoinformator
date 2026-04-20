@@ -71,6 +71,13 @@
         <span>Archiwum</span>
       </button>
 
+      <button class="nav-item" id="nav-generate-key" data-view="generate-key">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 4v16m8-8H4"/>
+        </svg>
+        <span>Generator kodów </span>
+      </button>
+
       <button class="nav-item" id="nav-new" data-view="new-message">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M12 4v16m8-8H4"/>
@@ -135,6 +142,60 @@
           <span>Ładowanie archiwum…</span>
         </div>
       </div>
+    </section>
+
+    <!-- ── Widok: Formularz nowego kodu ── -->
+    <section id="view-generate-key" class="view">
+      <div class="view-header">
+        <div>
+          <h2 class="view-title">Generator kodów</h2>
+          <p class="view-sub">Generuj unikalne kody (secret key)</p>
+        </div>
+      </div>   
+
+      <!-- Górna część: Generowanie nowego kodu -->
+      <form id="message-form" class="message-form" novalidate>
+        <input type="hidden" id="edit-msg-id"/>
+        <div class="form-col">
+          <div class="form-card">
+            <h3 class="form-card-title">Ustawienia generacji kodu</h3>
+
+            <div class="field-radio-group">
+              <label for="msg-duration" class="field-label">Ilość kodów</label><br>
+              <input type="radio" name="key-count" checked="true"><label>1</label>
+              <input type="radio" name="key-count"><label>10</label>
+              <input type="radio" name="key-count"><label>50</label>
+              <input type="radio" name="key-count"><label>100</label>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <div id="form-error" class="error-msg hidden"></div>
+            <div id="form-success" class="success-msg hidden"></div>
+            <button type="submit" class="btn btn-primary btn-full" id="submit-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon">
+                <path d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+              </svg>
+              <span id="submit-label">Generuj</span>
+            </button>
+          </div>
+        </div>
+      </form>
+
+      <!-- Dolna część: lista kodów -->
+      <div class="view-header">
+        <div>
+          <h2 class="view-title">Wygenerowane kody</h2>
+          <p class="view-sub">Lista wygenerowanych kodów</p>
+        </div>
+      </div>
+      <div id="key-list" class="message-list">
+        <div class="list-loading">
+          <div class="spinner"></div>
+          <span>Ładowanie kodów…</span>
+        </div>
+      </div>
+      
     </section>
 
     <!-- ── Widok: Formularz nowego / edycji komunikatu ── -->
