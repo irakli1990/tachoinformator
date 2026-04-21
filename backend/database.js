@@ -38,6 +38,12 @@ function initSchema() {
       expires_at DATETIME,
       created_by TEXT NOT NULL
     );
+
+    CREATE TABLE IF NOT EXISTS keys ( 
+      id INTEGER PRIMARY KEY AUTOINCREMENT not NULL, 
+      status varchar(15) not NULL DEFAULT "Wygenerowany", 
+      secret_key varchar(8) not NULL  
+    );
   `);
 
   // Seed: Predefiniowane domeny / użytkownicy firmowi

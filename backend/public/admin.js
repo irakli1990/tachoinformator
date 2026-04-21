@@ -156,6 +156,7 @@ function navigateTo(view) {
   // Ładowanie danych
   if (view === 'active')   loadMessages('active',   'active-list');
   if (view === 'archived') loadMessages('archived', 'archived-list');
+  if (view === 'generate-key') loadKeys();
   if (view === 'new-message') resetForm();
 }
 
@@ -194,6 +195,59 @@ async function loadMessages(filter, containerId) {
 
   } catch (err) {
     container.innerHTML = `<div class="error-msg">Błąd: ${err.message}</div>`;
+  }
+}
+
+// ─── Ładowanie kodów ─────────────────────────────────────────────────────
+async function loadKeys() {
+  const keyList = document.getElementById('key-list');
+  keyList.innerHTML = `
+    <div class="list-loading">
+      <div class="spinner"></div>
+      <span>Ładowanie kodów…</span>
+    </div>`;
+
+  try {
+    const res = await fetch(`${API}/keys`, { headers: authHeader() });
+    const keys = await res.json();
+
+    if (!res.ok) throw new Error(keys.error || 'Błąd serwera');
+
+    if (keys.length === 0) {
+      keyList.innerHTML = `
+        <div class="empty-state">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <p>Brak wygenerowanych kodów.</p>
+        </div>`;
+      return;
+    }
+
+    keyList.innerHTML = '';
+    keys.forEach(key => {
+      const keyRow = document.createElement('div');
+      keyRow.className = 'key-row';
+      keyRow.innerHTML = `
+        <span class="key-label">${key.secret_key}</span>
+        <span class="key-status">${key.status}</span>
+        <button type="button" class="action-btn action-copy" data-key="${key.secret_key}" title="Skopiuj">📋</button>
+      `;
+
+      keyRow.querySelector('.action-copy').addEventListener('click', (e) => {
+        e.preventDefault();
+        navigator.clipboard.writeText(key.secret_key);
+        const btn = e.target;
+        const originalText = btn.textContent;
+        btn.textContent = '✅';
+        setTimeout(() => btn.textContent = originalText, 2000);
+      });
+
+      keyList.appendChild(keyRow);
+    });
+
+  } catch (err) {
+    keyList.innerHTML = `<div class="error-msg">Błąd: ${err.message}</div>`;
   }
 }
 
@@ -292,7 +346,7 @@ function setupMessageForm() {
 }
 
 function setupGenerateKeyForm() {
-  document.getElementById('generate-key-btn').addEventListener('submit', submitGenerateKeyForm);
+  document.getElementById('generate-key-form').addEventListener('submit', submitGenerateKeyForm);
 }
 
 function resetForm() {
@@ -397,20 +451,27 @@ async function submitForm(e) {
 async function submitGenerateKeyForm(e) {
   e.preventDefault();
 
-  const checked = document.querySelector('input[type=radio]:checked');
-  const count = checked.value;
-  const errEl       = document.getElementById('key-form-error');
-  const successEl   = document.getElementById('key-form-success');
-  const btn         = document.getElementById('key-submit-btn');
+  const count = document.querySelector('input[name="key-count"]:checked').value;
+  const keys = generateKeys(count); // Use the existing function to generate keys locally
 
-  errEl.classList.add('hidden');
-  successEl.classList.add('hidden');
+  try {
+    const res = await fetch(`${API}/keys/generate`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...authHeader()
+      },
+      body: JSON.stringify({ keys }) // Send the generated keys to backend
+    });
 
-  const keys = generateKeys(count);
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error);
 
-  keys.forEach(key => {
-    console.log(key);
-  }) 
+    // Reload all keys from database to show updated list
+    await loadKeys();
+  } catch (err) {
+    alert('Error: ' + err.message);
+  }
 }
 
 // ─── Upload grafiki ───────────────────────────────────────────────────────
@@ -521,12 +582,16 @@ function generateKeys(count) {
   
   const chars = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
   const keyLength = 8;
+  
 
   for(let i = 0;i < count;i++){
     let key = '';
-    for(let j = 0;j < keyLength;j++){
-      key += chars[Math.floor(Math.random() * chars.length)];
-    }
+    do {
+      for(let j = 0;j < keyLength;j++) {
+        key += chars[Math.floor(Math.random() * chars.length)];
+      }
+    } while (keys.includes(key));
+
     keys.push(key);
   }
 

@@ -256,7 +256,7 @@ html, body {
 }
 
 
-.view-title { font-size: 22px; font-weight: 700; color: var(--gray-900); line-height: 1.2; }
+.view-title { font-size: 22px; font-weight: 700; color: var(--gray-900); margin-top: 10px;}
 .view-sub { font-size: 13.5px; color: var(--gray-500); margin-top: 4px; }
 
 /* ─── BUTTONS ──────────────────────────────────────────────── */
@@ -646,6 +646,76 @@ html, body {
 
 /* ─── Generator kodów ──────────────────────────────────────── */
 
+#key-list {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: 50px;
+  max-height: 800px;
+  overflow: auto;
+  padding: 8px;
+  gap: 8px;
+}
+
+.key-row {
+  border: 1px solid var(--gray-300);
+  border-radius: var(--radius);
+  width: 100%;
+  padding: 12px 16px;
+  background: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  transition: var(--transition);
+}
+
+.key-row:hover {
+  border-color: var(--gray-400);
+  box-shadow: var(--shadow-sm);
+}
+
+.key-label {
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--gray-900);
+  background: var(--gray-50);
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--gray-200);
+  flex: 1;
+  word-break: break-all;
+}
+
+.key-status {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--gray-600);
+  background: var(--red-light);
+  color: var(--red);
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.action-btn.action-copy {
+  background: var(--gray-100);
+  color: var(--gray-600);
+  border: 1px solid var(--gray-300);
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: var(--transition);
+  font-size: 12px;
+}
+
+.action-btn.action-copy:hover {
+  background: var(--gray-200);
+  color: var(--gray-700);
+}
+
 #key-count-radio-group {
   display: flex; 
   flex-direction: row;
@@ -674,6 +744,10 @@ html, body {
 #key-count-radio-group input:checked + label {
   background: #D02600;
   color: white;
+}
+
+#generate-key-btn {
+  margin-bottom: 50px;
 }
 
 /* ─── UTILS ────────────────────────────────────────────────── */

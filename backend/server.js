@@ -254,6 +254,41 @@ app.post('/api/upload', requireAuth, upload.single('image'), (req, res) => {
   res.json({ url: `/uploads/${req.file.filename}` });
 });
 
+// ─── Keys API ─────────────────────────────────────────────────────────────
+app.post('/api/keys/generate', requireAuth, (req, res) => {
+  try {
+    const { keys = [] } = req.body;
+    const validKeys = Array.isArray(keys) ? keys.slice(0, 100) : []; // Max 100 keys
+    
+    if (validKeys.length === 0) {
+      return res.status(400).json({ error: 'No keys provided' });
+    }
+
+    const inserted = [];
+    const stmt = db.getDb().prepare('INSERT INTO keys (status, secret_key) VALUES (?, ?)');
+
+    for (const key of validKeys) {
+      const result = stmt.run('Wygenerowany', key);
+      inserted.push({ id: result.lastInsertRowid, secret_key: key, status: 'Wygenerowany' });
+    }
+
+    res.status(201).json(inserted);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error inserting keys' });
+  }
+});
+
+app.get('/api/keys', requireAuth, (req, res) => {
+  try {
+    const keys = db.getDb().prepare('SELECT id, status, secret_key FROM keys ORDER BY id DESC').all();
+    res.json(keys);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error fetching keys' });
+  }
+});
+
 // ─── SSE – endpoint dla klientów Electron ─────────────────────────────────
 app.get('/api/events', (req, res) => {
   res.setHeader('Content-Type', 'text/event-stream');
