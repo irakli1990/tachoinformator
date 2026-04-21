@@ -231,7 +231,7 @@ async function loadKeys() {
       keyRow.innerHTML = `
         <span class="key-label">${key.secret_key}</span>
         <span class="key-status">${key.status}</span>
-        <button type="button" class="action-btn action-copy" data-key="${key.secret_key}" title="Skopiuj">📋</button>
+        <button type="button" class="action-btn action-copy" data-key="${key.secret_key}" title="Skopiuj"><i class="fa-regular fa-copy"></i></button>
       `;
 
       keyRow.querySelector('.action-copy').addEventListener('click', (e) => {
@@ -239,7 +239,7 @@ async function loadKeys() {
         navigator.clipboard.writeText(key.secret_key);
         const btn = e.target;
         const originalText = btn.textContent;
-        btn.textContent = '✅';
+        btn.innerHTML = '<i class="fa-solid fa-check"></i>';
         setTimeout(() => btn.textContent = originalText, 2000);
       });
 
