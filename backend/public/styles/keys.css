@@ -5,7 +5,6 @@
   flex-direction: column;
   width: 100%;
   min-height: 50px;
-  max-height: 800px;
   overflow: auto;
   padding: 8px;
   gap: 8px;

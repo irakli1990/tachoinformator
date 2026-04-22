@@ -237,10 +237,10 @@ async function loadKeys() {
       keyRow.querySelector('.action-copy').addEventListener('click', (e) => {
         e.preventDefault();
         navigator.clipboard.writeText(key.secret_key);
-        const btn = e.target;
-        const originalText = btn.textContent;
+        const btn = e.currentTarget;
         btn.innerHTML = '<i class="fa-solid fa-check"></i>';
-        setTimeout(() => btn.textContent = originalText, 2000);
+        btn.disabled = true;
+        setTimeout(() => { btn.innerHTML = '<i class="fa-regular fa-copy"></i>'; btn.disabled = false;}, 2000);
       });
 
       keyList.appendChild(keyRow);
@@ -452,7 +452,7 @@ async function submitGenerateKeyForm(e) {
   e.preventDefault();
 
   const count = document.querySelector('input[name="key-count"]:checked').value;
-  const keys = generateKeys(count); // Use the existing function to generate keys locally
+  const keys = generateKeys(count);
 
   try {
     const res = await fetch(`${API}/keys/generate`, {
@@ -461,13 +461,12 @@ async function submitGenerateKeyForm(e) {
         'Content-Type': 'application/json',
         ...authHeader()
       },
-      body: JSON.stringify({ keys }) // Send the generated keys to backend
+      body: JSON.stringify({ keys })
     });
 
     const data = await res.json();
     if (!res.ok) throw new Error(data.error);
 
-    // Reload all keys from database to show updated list
     await loadKeys();
   } catch (err) {
     alert('Error: ' + err.message);
