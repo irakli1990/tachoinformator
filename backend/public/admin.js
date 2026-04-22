@@ -240,6 +240,12 @@ async function loadKeys() {
         const btn = e.currentTarget;
         btn.innerHTML = '<i class="fa-solid fa-check"></i>';
         btn.disabled = true;
+        btn.parentElement.style.backgroundColor = "#f3f3f3";
+        btn.parentElement.querySelector('.key-label').style.backgroundColor = "#eaeaea";
+        btn.parentElement.querySelector('.key-label').style.color = "#848484";
+        btn.parentElement.querySelector('.key-status').style.backgroundColor = "#b2f5a2";
+        btn.parentElement.querySelector('.key-status').style.color = "#2b4c23";
+        btn.parentElement.querySelector('.key-status').innerHTML = "Wykorzystany";
         setTimeout(() => { btn.innerHTML = '<i class="fa-regular fa-copy"></i>'; btn.disabled = false;}, 2000);
       });
 
