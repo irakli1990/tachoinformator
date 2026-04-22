@@ -1,2 +1,5 @@
 node_modules
 dist
+clientpulse.db
+clientpulse.db-shm
+clientpulse.db-wal
