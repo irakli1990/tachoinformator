@@ -255,27 +255,56 @@ app.post('/api/upload', requireAuth, upload.single('image'), (req, res) => {
 });
 
 // ─── Keys API ─────────────────────────────────────────────────────────────
+function generateKey() {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let key = '';
+  for (let i = 0; i < 8; i++) {
+    key += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return key;
+}
+
 app.post('/api/keys/generate', requireAuth, (req, res) => {
   try {
-    const { keys = [] } = req.body;
-    const validKeys = Array.isArray(keys) ? keys.slice(0, 100) : []; // Max 100 keys
-    
-    if (validKeys.length === 0) {
-      return res.status(400).json({ error: 'No keys provided' });
-    }
+    const { count } = req.body;
+
+    const num = Math.min(Number(count) || 0, 100);
+    if (num <= 0) { return res.status(400).json({ error: 'Nieprawidłowa ilość' }); }
 
     const inserted = [];
-    const stmt = db.getDb().prepare('INSERT INTO keys (status, secret_key) VALUES (?, ?)');
 
-    for (const key of validKeys) {
-      const result = stmt.run('Wygenerowany', key);
-      inserted.push({ id: result.lastInsertRowid, secret_key: key, status: 'Wygenerowany' });
+    const stmt = db.getDb().prepare(`
+      INSERT INTO keys (status, secret_key)
+      VALUES (?, ?)
+    `);
+
+    while (inserted.length < num) {
+      const key = generateKey();
+
+      try {
+        const result = stmt.run('Wygenerowany', key);
+
+        inserted.push({
+          id: result.lastInsertRowid,
+          secret_key: key,
+          status: 'Wygenerowany'
+        });
+
+      } catch (err) {
+        if (err.code !== 'SQLITE_CONSTRAINT') {
+          throw err;
+        }
+      }
     }
 
-    res.status(201).json(inserted);
+    res.status(201).json({
+      inserted,
+      count: inserted.length
+    });
+
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: 'Error inserting keys' });
+    res.status(500).json({ error: 'Error generating keys' });
   }
 });
 

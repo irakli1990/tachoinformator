@@ -205,16 +205,6 @@ function deleteMessage(id) {
   return true;
 }
 
-function updateKeyStatus(id, status) {
-  const d = getDb();
-  const stmt = d.prepare(`
-    UPDATE keys
-    SET status = ?
-    WHERE id = ?
-  `);
-  return stmt.run(status, id);
-}
-
 module.exports = {
   getDb,
   findAdminByEmail,
@@ -228,5 +218,4 @@ module.exports = {
   updateMessage,
   toggleMessage,
   deleteMessage,
-  updateKeyStatus
 };
