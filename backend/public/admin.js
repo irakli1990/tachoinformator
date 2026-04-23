@@ -199,6 +199,7 @@ async function loadMessages(filter, containerId) {
 }
 
 // ─── Ładowanie kodów ─────────────────────────────────────────────────────
+// TODO: zrobic update w bazie danych po kliknieciu kopiuj
 async function loadKeys() {
   const keyList = document.getElementById('key-list');
   keyList.innerHTML = `
@@ -228,25 +229,75 @@ async function loadKeys() {
     keys.forEach(key => {
       const keyRow = document.createElement('div');
       keyRow.className = 'key-row';
+      keyRow.dataset.id = key.id;
+
       keyRow.innerHTML = `
         <span class="key-label">${key.secret_key}</span>
         <span class="key-status">${key.status}</span>
-        <button type="button" class="action-btn action-copy" data-key="${key.secret_key}" title="Skopiuj"><i class="fa-regular fa-copy"></i></button>
+        <button type="button"
+                class="action-btn action-copy"
+                data-id="${key.id}"
+                data-key="${key.secret_key}"
+                title="Skopiuj">
+          <i class="fa-regular fa-copy"></i>
+        </button>
       `;
 
-      keyRow.querySelector('.action-copy').addEventListener('click', (e) => {
+      if (key.status === 'Wykorzystany') {
+        keyRow.style.backgroundColor = "#f3f3f3";
+
+        const label = keyRow.querySelector('.key-label');
+        label.style.backgroundColor = "#eaeaea";
+        label.style.color = "#848484";
+
+        const statusEl = keyRow.querySelector('.key-status');
+        statusEl.style.backgroundColor = "#b2f5a2";
+        statusEl.style.color = "#2b4c23";
+      }
+
+      keyRow.querySelector('.action-copy').addEventListener('click', async (e) => {
         e.preventDefault();
-        navigator.clipboard.writeText(key.secret_key);
-        const btn = e.currentTarget;
-        btn.innerHTML = '<i class="fa-solid fa-check"></i>';
-        btn.disabled = true;
-        btn.parentElement.style.backgroundColor = "#f3f3f3";
-        btn.parentElement.querySelector('.key-label').style.backgroundColor = "#eaeaea";
-        btn.parentElement.querySelector('.key-label').style.color = "#848484";
-        btn.parentElement.querySelector('.key-status').style.backgroundColor = "#b2f5a2";
-        btn.parentElement.querySelector('.key-status').style.color = "#2b4c23";
-        btn.parentElement.querySelector('.key-status').innerHTML = "Wykorzystany";
-        setTimeout(() => { btn.innerHTML = '<i class="fa-regular fa-copy"></i>'; btn.disabled = false;}, 2000);
+        const copyButton = e.currentTarget;
+
+        try {
+          await navigator.clipboard.writeText(key.secret_key);
+
+          const res = await fetch(`${API}/keys/${key.id}`, {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json',
+              ...authHeader()
+            },
+            body: JSON.stringify({
+              status: 'Wykorzystany'
+            })
+          });
+
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error || data.message || 'Nie udało się zaktualizować statusu');
+
+          copyButton.innerHTML = '<i class="fa-solid fa-check"></i>';
+          copyButton.disabled = true;
+
+          keyRow.style.backgroundColor = "#f3f3f3";
+
+          const keyLabel = keyRow.querySelector('.key-label');
+          keyLabel.style.backgroundColor = "#eaeaea";
+          keyLabel.style.color = "#848484";
+
+          const keyStatus = keyRow.querySelector('.key-status');
+          keyStatus.style.backgroundColor = "#b2f5a2";
+          keyStatus.style.color = "#2b4c23";
+          keyStatus.textContent = "Wykorzystany";
+
+          setTimeout(() => {
+            copyButton.innerHTML = '<i class="fa-regular fa-copy"></i>';
+            copyButton.disabled = false;
+          }, 2000);
+
+        } catch (err) {
+          alert('Nie udało się skopiować lub zaktualizować klucza: ' + err.message);
+        }
       });
 
       keyList.appendChild(keyRow);

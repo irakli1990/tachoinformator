@@ -53,6 +53,16 @@
   letter-spacing: 0.5px;
 }
 
+.key-status.used {
+  background-color: #b2f5a2;
+  color: #2b4c23;
+}
+
+.key-row button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .action-btn.action-copy {
   background: var(--gray-100);
   color: var(--gray-600);

@@ -281,11 +281,50 @@ app.post('/api/keys/generate', requireAuth, (req, res) => {
 
 app.get('/api/keys', requireAuth, (req, res) => {
   try {
-    const keys = db.getDb().prepare('SELECT id, status, secret_key FROM keys ORDER BY id DESC').all();
+    const keys = db.getDb().prepare(`
+    SELECT id, status, secret_key
+    FROM keys
+    ORDER BY 
+      CASE WHEN status = 'Wykorzystany' THEN 1 ELSE 0 END,
+      id DESC
+  `).all();
     res.json(keys);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Error fetching keys' });
+  }
+});
+
+
+app.patch("/api/keys/:id", requireAuth, (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    if (!status) {
+      return res.status(400).json({ error: "Brak statusu" });
+    }
+
+    const stmt = db.getDb().prepare(`
+      UPDATE keys
+      SET status = ?
+      WHERE id = ?
+    `);
+
+    const result = stmt.run(status, id);
+
+    if (result.changes === 0) {
+      return res.status(404).json({ error: "Key not found" });
+    }
+
+    res.json({
+      message: "Updated successfully",
+      id,
+      status
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
   }
 });
 
@@ -319,7 +358,7 @@ app.get('*', (req, res) => {
 
 // ─── Start ────────────────────────────────────────────────────────────────
 app.listen(PORT, () => {
-  console.log(`\n✅  Info Tachospeed Backend uruchomiony`);
+  console.log(`\nInfo Tachospeed Backend uruchomiony`);
   console.log(`   API:          http://localhost:${PORT}/api`);
   console.log(`   Panel Admin:  http://localhost:${PORT}/`);
   console.log(`   Dozwolona domena: ${ALLOWED_DOMAIN}`);
