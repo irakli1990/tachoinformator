@@ -164,7 +164,7 @@ async function submitForm(e) {
 
     if (!res.ok) throw new Error(data.error || 'Błąd serwera');
 
-    successEl.textContent = editingId ? '✅ Komunikat zaktualizowany.' : '✅ Komunikat opublikowany. Klienci zostaną powiadomieni o skonfigurowanej godzinie.';
+    successEl.textContent = editingId ? 'Komunikat zaktualizowany.' : 'Komunikat opublikowany. Klienci zostaną powiadomieni o skonfigurowanej godzinie.';
     successEl.classList.remove('hidden');
 
     setTimeout(() => navigateTo('active'), 1200);
@@ -181,7 +181,6 @@ async function submitGenerateKeyForm(e) {
   e.preventDefault();
 
   const count = document.querySelector('input[name="key-count"]:checked').value;
-  const keys = generateKeys(count);
 
   try {
     const res = await fetch(`${API}/keys/generate`, {
@@ -190,43 +189,17 @@ async function submitGenerateKeyForm(e) {
         'Content-Type': 'application/json',
         ...authHeader()
       },
-      body: JSON.stringify({ keys })
+       body: JSON.stringify({
+        count: Number(count)
+      })
     });
 
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error);
+    if (!res.ok) throw new Error(data.error || 'Error generating keys');
 
-    try {
-      const numberRes = await fetch(`${API}/keys/overflow`, { 
-        headers: authHeader() 
-      });
-      if (!numberRes.ok) throw new Error('Nie można sprawdzić liczby kluczy');
-
-      const data = await numberRes.json();
-      const numberOfKeys = data.count;
-      console.log("Liczba kluczy: ", numberOfKeys);
-      if (numberOfKeys >= 1000) {
-        try {
-          const deleteCount = numberOfKeys - 1000;
-          const res = await fetch(`${API}/keys/overflow?limit=${deleteCount}`, {
-            method: 'DELETE',
-            headers: authHeader()
-          });
-
-          if (!res.ok) throw new Error('Nie można usunąć nadmiarowych kluczy');
-
-          const data = await res.json();
-          console.log(`Usunięto ${data.deleted} kluczy`);
-        } catch (err) {
-          alert('Error: ' + err.message);
-        }
-      }
-
-    } catch (numErr) {
-      alert('Klucze zostały wygenerowane, ale nie można sprawdzić liczby kluczy w bazie: ' + numErr.message);
-    }
-
+    // refresh list from DB (always correct state)
     await loadKeys();
+    
   } catch (err) {
     alert('Error: ' + err.message);
   }

@@ -16,7 +16,6 @@ function generateKeys(count) {
 
     keys.push(key);
   }
-
   return keys;
 }
 
