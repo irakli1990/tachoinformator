@@ -1,18 +1,16 @@
-// ─── Importy ──────────────────────────────────────────────────────────────
-import { showLogin, showApp } from "./view_user-app.js";
-import { currentUser, updateCurrentUser } from "../admin";
+import { state } from './state.js';
+import { showApp, showLogin } from './navigation.js';
 
-// ─── Sesja ────────────────────────────────────────────────────────────────
-function saveSession(user) {
+export function saveSession(user) {
   localStorage.setItem('cp_user', JSON.stringify(user));
-  updateCurrentUser(user);
+  state.currentUser = user;
 }
 
-function restoreSession() {
+export function restoreSession() {
   const stored = localStorage.getItem('cp_user');
   if (stored) {
     try {
-      updateCurrentUser(JSON.parse(stored));
+      state.currentUser = JSON.parse(stored);
       showApp();
     } catch {
       localStorage.removeItem('cp_user');
@@ -23,15 +21,10 @@ function restoreSession() {
   }
 }
 
-function logout() {
+export function logout() {
   localStorage.removeItem('cp_user');
-  updateCurrentUser(null);
+  localStorage.removeItem('cp_view');
+  state.currentUser = null;
   showLogin();
 }
 
-function authHeader() {
-  if (!currentUser) return {};
-  return { Authorization: 'Bearer ' + btoa(currentUser.email) };
-}
-
-export { saveSession, restoreSession, logout, authHeader };

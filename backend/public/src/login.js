@@ -1,24 +1,25 @@
-// ─── Importy ──────────────────────────────────────────────────────────────
-import { API, authHeader, saveSession, logout, showError } from './admin.js';
-import { showApp } from './view_user-app.js';
+import { showError } from './utils.js';
+import { saveSession } from './session.js';
+import { showApp } from './navigation.js';
+import { logout } from './session.js';
+import { API } from './api.js';
 
-// ─── Logowanie ────────────────────────────────────────────────────────────
-function setupLoginForm() {
-  const form    = document.getElementById('login-form');
-  const errEl   = document.getElementById('login-error');
-  const btn     = document.getElementById('login-btn');
-  const btnText = btn.querySelector('.btn-text');
-  const spinner = btn.querySelector('.btn-spinner');
+export function setupLoginForm() {
+  const loginForm = document.getElementById('login-form');
+  const loginError = document.getElementById('login-error');
+  const loginBtn = document.getElementById('login-btn');
+  const btnText = loginBtn.querySelector('.btn-text');
+  const btnSpinner = loginBtn.querySelector('.btn-spinner');
 
-  form.addEventListener('submit', async (e) => {
+  loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const email = document.getElementById('email-input').value.trim();
 
-    errEl.classList.add('hidden');
-    errEl.textContent = '';
+    loginError.classList.add('hidden');
+    loginError.textContent = '';
     btnText.classList.add('hidden');
-    spinner.classList.remove('hidden');
-    btn.disabled = true;
+    btnSpinner.classList.remove('hidden');
+    loginBtn.disabled = true;
 
     try {
       const res = await fetch(`${API}/auth/login`, {
@@ -29,21 +30,21 @@ function setupLoginForm() {
       const data = await res.json();
 
       if (!res.ok) {
-        showError(errEl, data.error || 'Brak dostępu. Sprawdź czy używasz adresu @infolab.pl');
+        showError(loginError, data.error || 'Brak dostępu. Sprawdź czy używasz adresu @infolab.pl');
       } else {
         saveSession(data.user);
         showApp();
       }
-    } catch {
-      showError(errEl, 'Błąd połączenia z serwerem. Sprawdź połączenie z siecią firmową.');
+    } catch(err) {
+      console.error(err);
+      showError(loginError, 'Błąd połączenia z serwerem. Sprawdź połączenie z siecią firmową.');
     } finally {
       btnText.classList.remove('hidden');
-      spinner.classList.add('hidden');
-      btn.disabled = false;
+      btnSpinner.classList.add('hidden');
+      loginBtn.disabled = false;
     }
   });
 
   document.getElementById('logout-btn').addEventListener('click', logout);
 }
 
-export { setupLoginForm };

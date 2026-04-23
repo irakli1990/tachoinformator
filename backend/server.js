@@ -268,9 +268,6 @@ app.post('/api/keys/generate', requireAuth, (req, res) => {
   try {
     const { count } = req.body;
 
-    const num = Math.min(Number(count) || 0, 100);
-    if (num <= 0) { return res.status(400).json({ error: 'Nieprawidłowa ilość' }); }
-
     const inserted = [];
 
     const stmt = db.getDb().prepare(`
@@ -278,7 +275,7 @@ app.post('/api/keys/generate', requireAuth, (req, res) => {
       VALUES (?, ?)
     `);
 
-    while (inserted.length < num) {
+    while (inserted.length < Number(count)) {
       const key = generateKey();
 
       try {
@@ -313,9 +310,7 @@ app.get('/api/keys', requireAuth, (req, res) => {
     const keys = db.getDb().prepare(`
     SELECT id, status, secret_key
     FROM keys
-    ORDER BY 
-      CASE WHEN status = 'Wykorzystany' THEN 1 ELSE 0 END,
-      id DESC
+    ORDER BY status DESC;
   `).all();
     res.json(keys);
   } catch (err) {
