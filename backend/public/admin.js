@@ -199,7 +199,6 @@ async function loadMessages(filter, containerId) {
 }
 
 // ─── Ładowanie kodów ─────────────────────────────────────────────────────
-// TODO: zrobic update w bazie danych po kliknieciu kopiuj
 async function loadKeys() {
   const keyList = document.getElementById('key-list');
   keyList.innerHTML = `
@@ -492,7 +491,7 @@ async function submitForm(e) {
 
     if (!res.ok) throw new Error(data.error || 'Błąd serwera');
 
-    successEl.textContent = editingId ? '✅ Komunikat zaktualizowany.' : '✅ Komunikat opublikowany. Klienci zostaną powiadomieni o skonfigurowanej godzinie.';
+    successEl.textContent = editingId ? 'Komunikat zaktualizowany.' : 'Komunikat opublikowany. Klienci zostaną powiadomieni o skonfigurowanej godzinie.';
     successEl.classList.remove('hidden');
 
     setTimeout(() => navigateTo('active'), 1200);
@@ -509,7 +508,6 @@ async function submitGenerateKeyForm(e) {
   e.preventDefault();
 
   const count = document.querySelector('input[name="key-count"]:checked').value;
-  const keys = generateKeys(count);
 
   try {
     const res = await fetch(`${API}/keys/generate`, {
@@ -518,43 +516,17 @@ async function submitGenerateKeyForm(e) {
         'Content-Type': 'application/json',
         ...authHeader()
       },
-      body: JSON.stringify({ keys })
+      body: JSON.stringify({
+        count: Number(count)
+      })
     });
 
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error);
+    if (!res.ok) throw new Error(data.error || 'Error generating keys');
 
-    try {
-      const numberRes = await fetch(`${API}/keys/overflow`, { 
-        headers: authHeader() 
-      });
-      if (!numberRes.ok) throw new Error('Nie można sprawdzić liczby kluczy');
-
-      const data = await numberRes.json();
-      const numberOfKeys = data.count;
-      console.log("Liczba kluczy: ", numberOfKeys);
-      if (numberOfKeys >= 1000) {
-        try {
-          const deleteCount = numberOfKeys - 1000;
-          const res = await fetch(`${API}/keys/overflow?limit=${deleteCount}`, {
-            method: 'DELETE',
-            headers: authHeader()
-          });
-
-          if (!res.ok) throw new Error('Nie można usunąć nadmiarowych kluczy');
-
-          const data = await res.json();
-          console.log(`Usunięto ${data.deleted} kluczy`);
-        } catch (err) {
-          alert('Error: ' + err.message);
-        }
-      }
-
-    } catch (numErr) {
-      alert('Klucze zostały wygenerowane, ale nie można sprawdzić liczby kluczy w bazie: ' + numErr.message);
-    }
-
+    // refresh list from DB (always correct state)
     await loadKeys();
+
   } catch (err) {
     alert('Error: ' + err.message);
   }
@@ -659,29 +631,6 @@ function closeModal() {
   deleteTarget = null;
   document.getElementById('confirm-modal').classList.add('hidden');
   document.getElementById('modal-backdrop').classList.add('hidden');
-}
-
-// ─── Generowanie kodów ────────────────────────────────────────────────────
-
-function generateKeys(count) {
-  const keys = [];
-  
-  const chars = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
-  const keyLength = 8;
-  
-
-  for(let i = 0;i < count;i++){
-    let key = '';
-    do {
-      for(let j = 0;j < keyLength;j++) {
-        key += chars[Math.floor(Math.random() * chars.length)];
-      }
-    } while (keys.includes(key));
-
-    keys.push(key);
-  }
-
-  return keys;
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────
