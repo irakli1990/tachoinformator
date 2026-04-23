@@ -1,8 +1,7 @@
-// ─── Importy ──────────────────────────────────────────────────────────────
-import { API, deleteTarget, setDeleteTarget } from "./main.js";
-import { authHeader } from "./session.js";
-import { loadMessages } from "./messages_loading.js";
-import { currentUser } from "./main.js";
+// ─── Importy ───────────────────────────────────────────────────────────────
+import { API, authHeader, deleteTarget, updateDeleteTarget } from './admin.js';
+import { loadMessages } from './communicate_loading.js';
+
 // ─── Modal usuwania ────────────────────────────────────────────────────────
 function setupModal() {
   document.getElementById('confirm-cancel').addEventListener('click', closeModal);
@@ -25,13 +24,13 @@ function setupModal() {
 }
 
 function openDeleteModal(id) {
-  setDeleteTarget(id);
+  updateDeleteTarget(id);
   document.getElementById('confirm-modal').classList.remove('hidden');
   document.getElementById('modal-backdrop').classList.remove('hidden');
 }
 
 function closeModal() {
-  setDeleteTarget(null);
+  updateDeleteTarget(null);
   document.getElementById('confirm-modal').classList.add('hidden');
   document.getElementById('modal-backdrop').classList.add('hidden');
 }

@@ -1,17 +1,18 @@
 // ─── Importy ──────────────────────────────────────────────────────────────
-import { currentUser, setCurrentUser } from "./main.js";
-import { showLogin } from "./views_login_app.js";
+import { showLogin, showApp } from "./view_user-app.js";
+import { currentUser, updateCurrentUser } from "../admin";
+
 // ─── Sesja ────────────────────────────────────────────────────────────────
 function saveSession(user) {
   localStorage.setItem('cp_user', JSON.stringify(user));
-  setCurrentUser(user);
+  updateCurrentUser(user);
 }
 
 function restoreSession() {
   const stored = localStorage.getItem('cp_user');
   if (stored) {
     try {
-      setCurrentUser(JSON.parse(stored));
+      updateCurrentUser(JSON.parse(stored));
       showApp();
     } catch {
       localStorage.removeItem('cp_user');
@@ -24,7 +25,7 @@ function restoreSession() {
 
 function logout() {
   localStorage.removeItem('cp_user');
-  setCurrentUser(null);
+  updateCurrentUser(null);
   showLogin();
 }
 

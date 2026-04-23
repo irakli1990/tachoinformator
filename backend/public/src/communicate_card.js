@@ -1,8 +1,9 @@
 // ─── Importy ──────────────────────────────────────────────────────────────
-import { toggleMessage, openEditForm } from "./form.js";
-import { openDeleteModal } from "./delete_modal.js";
 import { escHtml } from "./helpers.js";
-import { currentUser } from "./main.js";
+import { toggleMessage } from './active_toggle.js';
+import { openEditForm } from './admin.js';
+import { openDeleteModal } from './delete_modal.js';
+
 // ─── Karta komunikatu ─────────────────────────────────────────────────────
 function buildMsgCard(msg, filter) {
   const card = document.createElement('div');

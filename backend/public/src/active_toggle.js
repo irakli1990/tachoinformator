@@ -1,7 +1,7 @@
 // ─── Importy ──────────────────────────────────────────────────────────────
-import { API, authHeader } from "./main.js";
-import { loadMessages } from "./messages_loading.js";
-import { currentUser } from "./main.js";
+import { API, authHeader } from './admin.js';
+import { loadMessages } from './communicate_loading.js';
+
 // ─── Toggle aktywności ────────────────────────────────────────────────────
 async function toggleMessage(id, filter) {
   try {

@@ -1,7 +1,4 @@
-// ─── Importy ──────────────────────────────────────────────────────────────
-import { currentUser } from "./main.js";
 // ─── Generowanie kodów ────────────────────────────────────────────────────
-
 function generateKeys(count) {
   const keys = [];
   

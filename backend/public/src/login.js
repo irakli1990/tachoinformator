@@ -1,10 +1,7 @@
 // ─── Importy ──────────────────────────────────────────────────────────────
-import { showError } from "./helpers.js";
-import { saveSession } from "./session.js";
-import { showApp } from "./views_login_app.js";
-import { logout } from "./session.js";
-import { API } from "./main.js";
-import { currentUser } from "./main.js";
+import { API, authHeader, saveSession, logout, showError } from './admin.js';
+import { showApp } from './view_user-app.js';
+
 // ─── Logowanie ────────────────────────────────────────────────────────────
 function setupLoginForm() {
   const form    = document.getElementById('login-form');

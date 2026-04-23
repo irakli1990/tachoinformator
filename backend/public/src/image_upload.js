@@ -1,6 +1,6 @@
 // ─── Importy ──────────────────────────────────────────────────────────────
-import { selectedFile, setSelectedFile } from "./main.js";
-import { currentUser } from "./main.js";
+import { selectedFile, updateSelectedFile } from './admin.js';
+
 // ─── Upload grafiki ───────────────────────────────────────────────────────
 function setupUploadZone() {
   const zone    = document.getElementById('upload-zone');
@@ -46,7 +46,7 @@ function handleFile(file) {
     alert('Plik jest zbyt duży. Maksymalny rozmiar to 5 MB.');
     return;
   }
-  setSelectedFile(file);
+  updateSelectedFile(file);
   const url = URL.createObjectURL(file);
   showUploadPreview(url);
 }
@@ -60,7 +60,7 @@ function showUploadPreview(src) {
 }
 
 function clearUploadPreview() {
-  setSelectedFile(null);
+  updateSelectedFile(null);
   document.getElementById('upload-placeholder').classList.remove('hidden');
   const preview = document.getElementById('upload-preview');
   preview.src = '';

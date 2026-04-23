@@ -1,5 +1,3 @@
-// ─── Importy ──────────────────────────────────────────────────────────────
-import { currentUser } from "./main.js";
 // ─── Helpers ──────────────────────────────────────────────────────────────
 function showError(el, msg) {
   el.textContent = msg;

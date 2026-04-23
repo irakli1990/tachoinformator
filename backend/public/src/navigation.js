@@ -1,6 +1,8 @@
 // ─── Importy ──────────────────────────────────────────────────────────────
-import { currentView, setCurrentView } from "./main.js";
-import { currentUser } from "./main.js";
+import { currentView, updateCurrentView, resetForm } from "./admin.js";
+import { loadMessages } from "./communicate_loading.js";
+import { loadKeys } from "./key_loading.js";
+
 // ─── Nawigacja ────────────────────────────────────────────────────────────
 function setupNavigation() {
   document.querySelectorAll('.nav-item').forEach(btn => {
@@ -30,7 +32,7 @@ function navigateTo(view) {
   const target = document.getElementById(viewMap[view]);
   if (target) target.classList.add('active');
 
-  if (view !== 'new-message') setCurrentView(view);
+  if (view !== 'new-message') updateCurrentView(view);
 
   // Ładowanie danych
   if (view === 'active')   loadMessages('active',   'active-list');

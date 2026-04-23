@@ -1,12 +1,74 @@
-// ─── Importy ──────────────────────────────────────────────────────────────
-import { API, editingId, selectedFile, setEditingId, setSelectedFile } from "./main.js";
-import { navigateTo } from "./navigation.js";
-import { showError } from "./helpers.js";
-import { showUploadPreview } from "./image_upload.js";
-import { generateKeys } from "./key_generating.js";
-import { authHeader } from "./session.js";
-import { loadKeys } from "./key_loading.js";
-import { currentUser } from "./main.js";
+/* ════════════════════════════════════════════════════════════
+   Info Tachospeed – Admin Panel SPA JavaScript
+   ════════════════════════════════════════════════════════════ */
+
+const API = 'http://localhost:3000/api';
+
+// ─── Stan aplikacji ────────────────────────────────────────────────────────
+let currentUser = null;
+function updateCurrentUser(user) {
+  currentUser = user;
+}
+let currentView = 'active';
+function updateCurrentView(view) {
+  currentView = view;
+}
+let editingId    = null;
+function updateEditingId(id) {
+  editingId = id;
+}
+let deleteTarget = null;
+function updateDeleteTarget(target) {
+  deleteTarget = target;
+}
+let selectedFile = null;
+function updateSelectedFile(file) {
+  selectedFile = file;
+}
+
+// ─── Init ──────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  restoreSession();
+  setupLoginForm();
+  setupNavigation();
+  setupMessageForm();
+  setupGenerateKeyForm();
+  setupUploadZone();
+  setupModal();
+});
+
+// ─── Sesja ────────────────────────────────────────────────────────────────
+function saveSession(user) {
+  localStorage.setItem('cp_user', JSON.stringify(user));
+  currentUser = user;
+}
+
+function restoreSession() {
+  const stored = localStorage.getItem('cp_user');
+  if (stored) {
+    try {
+      currentUser = JSON.parse(stored);
+      showApp();
+    } catch {
+      localStorage.removeItem('cp_user');
+      showLogin();
+    }
+  } else {
+    showLogin();
+  }
+}
+
+function logout() {
+  localStorage.removeItem('cp_user');
+  currentUser = null;
+  showLogin();
+}
+
+function authHeader() {
+  if (!currentUser) return {};
+  return { Authorization: 'Bearer ' + btoa(currentUser.email) };
+}
+
 // ─── Formularz ────────────────────────────────────────────────────────────
 function setupMessageForm() {
   document.getElementById('message-form').addEventListener('submit', submitForm);
@@ -17,8 +79,8 @@ function setupGenerateKeyForm() {
 }
 
 function resetForm() {
-  setEditingId(null);
-  setSelectedFile(null);
+  editingId    = null;
+  selectedFile = null;
 
   document.getElementById('form-view-title').textContent = 'Nowy komunikat';
   document.getElementById('submit-label').textContent    = 'Opublikuj komunikat';
@@ -119,7 +181,7 @@ async function submitGenerateKeyForm(e) {
   e.preventDefault();
 
   const count = document.querySelector('input[name="key-count"]:checked').value;
-  const keys = generateKeys(count); // Use the existing function to generate keys locally
+  const keys = generateKeys(count);
 
   try {
     const res = await fetch(`${API}/keys/generate`, {
@@ -128,17 +190,58 @@ async function submitGenerateKeyForm(e) {
         'Content-Type': 'application/json',
         ...authHeader()
       },
-      body: JSON.stringify({ keys }) // Send the generated keys to backend
+      body: JSON.stringify({ keys })
     });
 
     const data = await res.json();
     if (!res.ok) throw new Error(data.error);
 
-    // Reload all keys from database to show updated list
+    try {
+      const numberRes = await fetch(`${API}/keys/overflow`, { 
+        headers: authHeader() 
+      });
+      if (!numberRes.ok) throw new Error('Nie można sprawdzić liczby kluczy');
+
+      const data = await numberRes.json();
+      const numberOfKeys = data.count;
+      console.log("Liczba kluczy: ", numberOfKeys);
+      if (numberOfKeys >= 1000) {
+        try {
+          const deleteCount = numberOfKeys - 1000;
+          const res = await fetch(`${API}/keys/overflow?limit=${deleteCount}`, {
+            method: 'DELETE',
+            headers: authHeader()
+          });
+
+          if (!res.ok) throw new Error('Nie można usunąć nadmiarowych kluczy');
+
+          const data = await res.json();
+          console.log(`Usunięto ${data.deleted} kluczy`);
+        } catch (err) {
+          alert('Error: ' + err.message);
+        }
+      }
+
+    } catch (numErr) {
+      alert('Klucze zostały wygenerowane, ale nie można sprawdzić liczby kluczy w bazie: ' + numErr.message);
+    }
+
     await loadKeys();
   } catch (err) {
     alert('Error: ' + err.message);
   }
 }
 
-export { setupMessageForm, setupGenerateKeyForm, resetForm, openEditForm, submitForm, submitGenerateKeyForm };
+import { showError, escHtml } from './helpers.js';
+import { generateKeys } from './key_generating.js';
+import { setupModal, openDeleteModal, closeModal } from './delete_modal.js';
+import { setupUploadZone, handleFile, showUploadPreview, clearUploadPreview } from './image_upload.js';
+import { toggleMessage } from './active_toggle.js';
+import { buildMsgCard } from './communicate_card.js';
+import { loadKeys } from './key_loading.js';
+import { loadMessages } from './communicate_loading.js';
+import { setupNavigation, navigateTo } from './navigation.js';
+import { setupLoginForm } from './login.js';
+import { showLogin, showApp } from './view_user-app.js';
+
+export { API, authHeader, loadMessages, currentUser, updateCurrentUser, currentView, updateCurrentView, editingId, updateEditingId, deleteTarget, updateDeleteTarget, selectedFile, updateSelectedFile, openEditForm, resetForm, logout, saveSession, showApp, showError };

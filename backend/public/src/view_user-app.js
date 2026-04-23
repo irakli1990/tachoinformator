@@ -1,6 +1,6 @@
-// ─── Importy ───────────────────────────────────────────────────────────────
+import { currentUser } from "./admin.js";
 import { navigateTo } from "./navigation.js";
-import { currentUser } from "./main.js";
+
 // ─── Widoki: Login / App ───────────────────────────────────────────────────
 function showLogin() {
   document.getElementById('login-screen').classList.add('active');

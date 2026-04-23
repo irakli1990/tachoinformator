@@ -1,7 +1,7 @@
-// ─── Importy ──────────────────────────────────────────────────────────────
-import { API } from "./main.js";
-import { authHeader } from "./session.js";
-import { currentUser } from "./main.js";
+// ─── Importy ─────────────────────────────────────────────────────────────
+import { API, authHeader } from './admin.js';
+import { buildMsgCard } from './communicate_card.js';
+
 // ─── Ładowanie komunikatów ────────────────────────────────────────────────
 async function loadMessages(filter, containerId) {
   const container = document.getElementById(containerId);
