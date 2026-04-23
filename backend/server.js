@@ -328,6 +328,45 @@ app.patch("/api/keys/:id", requireAuth, (req, res) => {
   }
 });
 
+// ─── Keys overflow API ────────────────────────────────────────────────────
+app.get('/api/keys/overflow', requireAuth, (req, res) => {
+  try {
+    const keys = db.getDb().prepare(`
+    SELECT COUNT(*) AS count
+    FROM keys
+  `).get();
+    res.json(keys);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error fetching keys' });
+  }
+});
+
+app.delete('/api/keys/overflow', requireAuth, (req, res) => {
+  try {
+    const limit = parseInt(req.query.limit, 10);
+
+    if (!limit || limit <= 0) {
+      return res.status(400).json({ error: 'Invalid limit' });
+    }
+
+    const result = db.getDb().prepare(`
+      DELETE FROM keys
+      WHERE id IN (
+        SELECT id FROM keys
+        ORDER BY id ASC
+        LIMIT ?
+      )
+    `).run(limit);
+
+    res.json({ deleted: result.changes });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error deleting keys' });
+  }
+});
+
 // ─── SSE – endpoint dla klientów Electron ─────────────────────────────────
 app.get('/api/events', (req, res) => {
   res.setHeader('Content-Type', 'text/event-stream');

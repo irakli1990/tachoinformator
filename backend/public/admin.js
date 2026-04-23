@@ -524,6 +524,36 @@ async function submitGenerateKeyForm(e) {
     const data = await res.json();
     if (!res.ok) throw new Error(data.error);
 
+    try {
+      const numberRes = await fetch(`${API}/keys/overflow`, { 
+        headers: authHeader() 
+      });
+      if (!numberRes.ok) throw new Error('Nie można sprawdzić liczby kluczy');
+
+      const data = await numberRes.json();
+      const numberOfKeys = data.count;
+      console.log("Liczba kluczy: ", numberOfKeys);
+      if (numberOfKeys >= 1000) {
+        try {
+          const deleteCount = numberOfKeys - 1000;
+          const res = await fetch(`${API}/keys/overflow?limit=${deleteCount}`, {
+            method: 'DELETE',
+            headers: authHeader()
+          });
+
+          if (!res.ok) throw new Error('Nie można usunąć nadmiarowych kluczy');
+
+          const data = await res.json();
+          console.log(`Usunięto ${data.deleted} kluczy`);
+        } catch (err) {
+          alert('Error: ' + err.message);
+        }
+      }
+
+    } catch (numErr) {
+      alert('Klucze zostały wygenerowane, ale nie można sprawdzić liczby kluczy w bazie: ' + numErr.message);
+    }
+
     await loadKeys();
   } catch (err) {
     alert('Error: ' + err.message);
