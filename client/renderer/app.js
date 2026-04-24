@@ -188,7 +188,6 @@ function openDetail(msg) {
     <div class="detail-body">
       <h1 class="detail-headline">${escHtml(msg.headline)}</h1>
       <div class="detail-meta">
-        <span class="detail-badge">Komunikat firmowy</span>
         <span class="detail-date">${dateStr}</span>
       </div>
       <div class="detail-divider"></div>
