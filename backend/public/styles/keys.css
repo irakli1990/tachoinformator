@@ -45,8 +45,8 @@
   font-size: 12px;
   font-weight: 500;
   color: var(--gray-600);
-  background: var(--red-light);
-  color: var(--red);
+  background: var(--green-light);
+  color: var(--green);
   padding: 2px 6px;
   border-radius: var(--radius-sm);
   text-transform: uppercase;
@@ -112,4 +112,12 @@
 #generate-key-btn {
   margin-bottom: 50px;
   background-color: #DC2626;
+}
+
+.key-view-limit{
+  display: flex;
+  justify-content: left;
+  margin: 10px;
+  margin-top: 0;
+  gap: 5px;
 }

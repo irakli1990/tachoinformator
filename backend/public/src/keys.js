@@ -48,8 +48,8 @@ export async function loadKeys() {
         label.style.color = "#848484";
 
         const statusEl = keyRow.querySelector('.key-status');
-        statusEl.style.backgroundColor = "#b2f5a2";
-        statusEl.style.color = "#2b4c23";
+        statusEl.style.backgroundColor = "var(--red-light)";
+        statusEl.style.color = "var(--red)";
       }
 
       keyRow.querySelector('.action-copy').addEventListener('click', async (e) => {
@@ -83,8 +83,8 @@ export async function loadKeys() {
           keyLabel.style.color = "#848484";
 
           const keyStatus = keyRow.querySelector('.key-status');
-          keyStatus.style.backgroundColor = "#b2f5a2";
-          keyStatus.style.color = "#2b4c23";
+          keyStatus.style.backgroundColor = "var(--red-light)";
+          keyStatus.style.color = "var(--red)";
           keyStatus.textContent = "Wykorzystany";
 
           setTimeout(() => {
