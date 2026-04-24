@@ -234,6 +234,9 @@
   cursor: pointer;
   transition: background var(--transition), box-shadow var(--transition), transform var(--transition);
   white-space: nowrap;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 .btn:active { transform: scale(.98); }
 
