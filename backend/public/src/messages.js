@@ -3,6 +3,7 @@ import { escHtml } from './utils.js';
 import { openDeleteModal } from './modal.js';
 import { state } from './state.js';
 import { navigateTo } from './navigation.js';
+import { showUploadPreview } from './upload.js';
 
 export async function loadMessages(filter, containerId) {
   const container = document.getElementById(containerId);
