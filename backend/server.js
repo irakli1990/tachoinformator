@@ -310,7 +310,7 @@ app.get('/api/keys', requireAuth, (req, res) => {
     const keys = db.getDb().prepare(`
     SELECT id, status, secret_key
     FROM keys
-    ORDER BY status ASC;
+    ORDER BY status ASC, id DESC;
   `).all();
     res.json(keys);
   } catch (err) {
