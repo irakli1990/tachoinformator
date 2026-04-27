@@ -358,6 +358,9 @@ body {
   white-space: pre-wrap;
   word-break: break-word;
 }
+.detail-body {
+  margin-top: 0;
+}
 
 /* ─── Util ─────────────────────────────────────────────────── */
 .hidden { display: none !important; }
