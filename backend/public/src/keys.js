@@ -1,6 +1,8 @@
 import { API, authHeader } from './api.js';
 
 export async function loadKeys() {
+  setupKeysPages();
+
   const keyList = document.getElementById('key-list');
   keyList.innerHTML = `
     <div class="list-loading">
@@ -165,4 +167,73 @@ export async function submitGenerateKeyForm(e) {
   } catch (err) {
     alert('Error: ' + err.message);
   }
+}
+
+let initialized = false;
+
+async function setupKeysPages() {
+   try {
+      const numberRes = await fetch(`${API}/keys/overflow`, { 
+        headers: authHeader() 
+      });
+      if (!numberRes.ok) throw new Error('Nie można sprawdzić liczby kluczy');
+
+      const keysPerPage = document.getElementById('keys-per-page');
+      const currentPage = document.getElementById('key-page');
+      const pageDownBtn = document.getElementById('page-down');
+      const pageUpBtn = document.getElementById('page-up');
+
+      if (!initialized) {
+        initialized = true;
+
+        keysPerPage.addEventListener('change', () => {
+          updateValues();
+        });
+
+        currentPage.addEventListener('change', () => {
+          pageChanged();
+        });
+
+        pageDownBtn.addEventListener('click', () => changePageBtn(-1));
+
+        pageUpBtn.addEventListener('click', () => changePageBtn(1));
+
+      }
+
+      const data = await numberRes.json();
+      const numberOfKeys = data.count;
+
+      let keyPagesMax;
+
+      function updateValues(){
+        keyPagesMax = Math.ceil(numberOfKeys / keysPerPage.value);  
+
+        const keyAmount = document.getElementById('key-amount');
+        const keysPagesAmount = document.getElementById('max-pages');
+
+        keyAmount.innerText = (keysPerPage.value*currentPage.value + 1 - keysPerPage.value) + " - " + (keysPerPage.value*currentPage.value + numberOfKeys - Math.abs(keysPerPage.value*currentPage.value-numberOfKeys))/2 + " / " + numberOfKeys;
+
+        keysPagesAmount.innerHTML = keyPagesMax;
+      }
+
+      updateValues();
+            
+
+      function pageChanged(){
+        updateValues();
+        console.log("changed the page");
+      }
+
+      function changePageBtn(value){
+        const currentPage = document.getElementById('key-page');
+        currentPage.value = Number(currentPage.value) + value;
+        if(currentPage.value < 1) currentPage.value = 1;
+        if(currentPage.value > keyPagesMax) currentPage.value = keyPagesMax;
+        pageChanged();
+      }
+
+
+    } catch (numErr) {
+      alert('Klucze zostały wygenerowane, ale nie można sprawdzić liczby kluczy w bazie: ' + numErr.message);
+    }
 }
