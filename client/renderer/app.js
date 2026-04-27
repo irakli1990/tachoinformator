@@ -176,23 +176,19 @@ function openDetail(msg) {
   });
 
   const imageHtml = msg.image_url
-    ? `<img class="detail-image" src="${API}${msg.image_url}" alt="${escHtml(msg.headline)}"/>`
-    : `<div class="detail-image-placeholder">
-         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-           <path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-         </svg>
-       </div>`;
+  ? `<img class="detail-image" src="${API}${msg.image_url}" alt="${escHtml(msg.headline)}"/>`
+  : '';
 
   document.getElementById('detail-content').innerHTML = `
-    ${imageHtml}
-    <div class="detail-body">
-      <h1 class="detail-headline">${escHtml(msg.headline)}</h1>
-      <div class="detail-meta">
-        <span class="detail-date">${dateStr}</span>
-      </div>
-      <div class="detail-divider"></div>
-      <div class="detail-description">${escHtml(msg.description)}</div>
-    </div>`;
+  ${imageHtml}
+  <div class="detail-body">
+    <h1 class="detail-headline">${escHtml(msg.headline)}</h1>
+    <div class="detail-meta">
+      <span class="detail-date">${dateStr}</span>
+    </div>
+    <div class="detail-divider"></div>
+    <div class="detail-description">${escHtml(msg.description)}</div>
+  </div>`;
 
   showView('detail');
 }
