@@ -7,12 +7,15 @@ const API = window.electronAPI ? window.electronAPI.apiBase : 'http://localhost:
 
 let allMessages = [];
 let currentDetailId = null;
+let refreshInterval = null;
 
 // ─── Init ──────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   setupButtons();
   setupIPCListeners();
   loadMessages();
+
+  startAutoRefresh();
 });
 
 // ─── Przyciski ─────────────────────────────────────────────────────────────
@@ -191,6 +194,21 @@ function openDetail(msg) {
   </div>`;
 
   showView('detail');
+}
+
+// ─── Refresh ──────────────────────────────────────────────────────────────
+
+function startAutoRefresh() {
+  if (refreshInterval) {
+    clearInterval(refreshInterval);
+  }
+
+  refreshInterval = setInterval(() => {
+    const listView = document.getElementById('view-list');
+    if (listView.classList.contains('active')) {
+      loadMessages();
+    }
+  }, 1500); 
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────
