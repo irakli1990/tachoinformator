@@ -1,7 +1,7 @@
 import { API, authHeader } from './api.js';
 
 export async function loadKeys() {
-  setupKeysPages();
+  await setupKeysPages();
 
   const keyList = document.getElementById('key-list');
   keyList.innerHTML = `
@@ -11,7 +11,17 @@ export async function loadKeys() {
     </div>`;
 
   try {
-    const res = await fetch(`${API}/keys`, { headers: authHeader() });
+    const res = await fetch(`${API}/keys`, { 
+      method: 'POST',
+      headers: {
+        ...authHeader(), 
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        page: Number(document.getElementById('current-key-tab').value),
+        limit: Number(document.getElementById('keys-per-page').value)
+      })
+    });
     const keys = await res.json();
 
     if (!res.ok) throw new Error(keys.error || 'Błąd serwera');
@@ -32,6 +42,7 @@ export async function loadKeys() {
 
       keyRow.innerHTML = `
         <span class="key-label">${key.secret_key}</span>
+        <span class="key-date">${key.id}</span>
         <span class="key-status">${key.status}</span>
         <button type="button"
                 class="action-btn action-copy"
@@ -161,7 +172,6 @@ export async function submitGenerateKeyForm(e) {
       alert('Klucze zostały wygenerowane, ale nie można sprawdzić liczby kluczy w bazie: ' + numErr.message);
     }
 
-
     await loadKeys();
 
   } catch (err) {
@@ -169,69 +179,67 @@ export async function submitGenerateKeyForm(e) {
   }
 }
 
-let initialized = false;
+export function setupKeysPagination() {
+    const prevBtn = document.getElementById('previous-page');
+    const nextBtn = document.getElementById('next-page');
+    const currentTabInput = document.getElementById('current-key-tab');
+    const maxKeysSelect = document.getElementById('keys-per-page');
+
+    const maxTabsEl = document.getElementById('max-tabs');
+
+
+    prevBtn.addEventListener('click', () => {
+      currentTabInput.value = Number(currentTabInput.value) - 1;
+      currentTabInput.dispatchEvent(new Event('change'));
+    });
+
+    nextBtn.addEventListener('click', () => {
+      currentTabInput.value = Number(currentTabInput.value) + 1;
+      currentTabInput.dispatchEvent(new Event('change'));
+    });
+
+    currentTabInput.addEventListener('change', () => {
+      if (Number(currentTabInput.value) > Number(maxTabsEl.innerText)) currentTabInput.value = Number(maxTabsEl.innerText);
+      if (Number(currentTabInput.value) < 1) currentTabInput.value = 1;
+      currentTabInput.value = currentTabInput.value.replace(/\D/g, '');
+      loadKeys();
+    });
+
+    maxKeysSelect.addEventListener('change', () => {
+      currentTabInput.value = 1;
+      loadKeys();
+    });
+}
 
 async function setupKeysPages() {
    try {
-      const numberRes = await fetch(`${API}/keys/overflow`, { 
-        headers: authHeader() 
+      const currentTab = Number(document.getElementById('current-key-tab').value);
+      const keysPerTab = Number(document.getElementById('keys-per-page').value);
+      const res = await fetch(`${API}/keys/tabs`, { 
+        method: 'POST',
+        headers: {
+          ...authHeader(), 
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          currentTab,
+          keysPerTab
+        })
       });
-      if (!numberRes.ok) throw new Error('Nie można sprawdzić liczby kluczy');
+      if (!res.ok) throw new Error('Nie można sprawdzić liczby kluczy');
 
-      const keysPerPage = document.getElementById('keys-per-page');
-      const currentPage = document.getElementById('key-page');
-      const pageDownBtn = document.getElementById('page-down');
-      const pageUpBtn = document.getElementById('page-up');
+      const data = await res.json();
 
-      if (!initialized) {
-        initialized = true;
+      const currentTabEl = document.getElementById('current-key-tab');
+      const maxTabsEl = document.getElementById('max-tabs');
+      const minKeyEl = document.getElementById('min-key');
+      const maxKeyEl = document.getElementById('max-key');
+      const allKeysEl = document.getElementById('all-keys');
 
-        keysPerPage.addEventListener('change', () => {
-          updateValues();
-        });
-
-        currentPage.addEventListener('change', () => {
-          pageChanged();
-        });
-
-        pageDownBtn.addEventListener('click', () => changePageBtn(-1));
-
-        pageUpBtn.addEventListener('click', () => changePageBtn(1));
-
-      }
-
-      const data = await numberRes.json();
-      const numberOfKeys = data.count;
-
-      let keyPagesMax;
-
-      function updateValues(){
-        keyPagesMax = Math.ceil(numberOfKeys / keysPerPage.value);  
-
-        const keyAmount = document.getElementById('key-amount');
-        const keysPagesAmount = document.getElementById('max-pages');
-
-        keyAmount.innerText = (keysPerPage.value*currentPage.value + 1 - keysPerPage.value) + " - " + (keysPerPage.value*currentPage.value + numberOfKeys - Math.abs(keysPerPage.value*currentPage.value-numberOfKeys))/2 + " / " + numberOfKeys;
-
-        keysPagesAmount.innerHTML = keyPagesMax;
-      }
-
-      updateValues();
-            
-
-      function pageChanged(){
-        updateValues();
-        console.log("changed the page");
-      }
-
-      function changePageBtn(value){
-        const currentPage = document.getElementById('key-page');
-        currentPage.value = Number(currentPage.value) + value;
-        if(currentPage.value < 1) currentPage.value = 1;
-        if(currentPage.value > keyPagesMax) currentPage.value = keyPagesMax;
-        pageChanged();
-      }
-
+      maxTabsEl.textContent = data.numberOfTabs;
+      minKeyEl.textContent = data.tabStart;
+      maxKeyEl.textContent = data.maxForTab;
+      allKeysEl.textContent = data.keysAmount;
 
     } catch (numErr) {
       alert('Klucze zostały wygenerowane, ale nie można sprawdzić liczby kluczy w bazie: ' + numErr.message);
