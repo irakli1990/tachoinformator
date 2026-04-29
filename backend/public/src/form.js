@@ -6,7 +6,6 @@ import { clearUploadPreview } from './upload.js';
 
 export function setupMessageForm() {
   document.getElementById('message-form').addEventListener('submit', submitForm);
-  setupImageToggle();
 }
 
 export function resetForm() {
@@ -84,7 +83,7 @@ export async function submitForm(e) {
   }
 }
 
-function setupImageToggle() {
+export function setupImageToggle() {
   const checkbox = document.getElementById('msg-has-image');
   const wrapper  = document.getElementById('image-upload-wrapper');
 
@@ -97,4 +96,8 @@ function setupImageToggle() {
       clearUploadPreview();
     }
   });
+}
+
+export function setupFrequencyToggle() {
+
 }

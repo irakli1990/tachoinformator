@@ -1,6 +1,6 @@
 import { restoreSession } from './session.js';
 import { setupNavigation } from './navigation.js';
-import { setupMessageForm } from './form.js';
+import { setupMessageForm,  setupImageToggle, setupFrequencyToggle } from './form.js';
 import { setupGenerateKeyForm, setupKeysPagination } from './keys.js';
 import { setupUploadZone } from './upload.js';
 import { setupModal } from './modal.js';
@@ -15,4 +15,6 @@ document.addEventListener('DOMContentLoaded', () => {
   setupKeysPagination();
   setupUploadZone();
   setupModal();
+  setupImageToggle();
+  setupFrequencyToggle();
 });

@@ -81,7 +81,7 @@ app.on('before-quit', () => { isQuitting = true; });
 // ─── Tray ─────────────────────────────────────────────────────────────────
 function createTray() {
   // Ikona tray – generujemy prostą ikonę SVG konwertując na nativeImage
-  const iconPath = path.join(__dirname, 'assets', 'tray-icon.png');
+  const iconPath = path.join(__dirname, 'assets', 'ikona.png');
 
   let icon;
   if (fs.existsSync(iconPath)) {
@@ -139,11 +139,15 @@ function openMessagesWindow(startView = 'list') {
     return;
   }
 
+  const path = require('path');
+
   const { width: sw, height: sh } = screen.getPrimaryDisplay().workAreaSize;
+  const mainIcon = path.join(__dirname, 'assets', 'ikona.ico');
 
   messagesWindow = new BrowserWindow({
     width:           480,
     height:          640,
+    icon:            mainIcon,
     x:               sw - 500,
     y:               sh - 680,
     resizable:       true,
