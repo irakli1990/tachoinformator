@@ -216,7 +216,8 @@
         <form id="message-form" class="message-form" novalidate>
           <input type="hidden" id="edit-msg-id"/>
 
-          <div class="form-grid">
+          <div class="main-form">
+            <div class="form-grid">
             <!-- Lewa kolumna: treść -->
             <div class="form-col">
               <div class="form-card">
@@ -240,23 +241,33 @@
                 </div>
 
                 <div class="field-group">
-                  <label class="field-label">Grafika (miniaturka)</label>
+                <label class="field-label">Grafika (miniaturka)</label>
+                <div style="margin-bottom:10px;">
+                  <label>
+                    <input type="checkbox" id="msg-has-image" class="check-Image"/>
+                    Dodaj zdjęcie
+                  </label>
+                </div>
+                <div id="image-upload-wrapper" class="hidden">
                   <div class="upload-zone" id="upload-zone">
-                    <input type="file" id="msg-image" accept="image/jpeg,image/png,image/webp,image/gif" hidden/>
-                    <div class="upload-placeholder" id="upload-placeholder">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="upload-icon">
-                        <path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                      </svg>
-                      <span class="upload-label">Kliknij lub przeciągnij plik</span>
-                      <span class="upload-hint">JPG, PNG, WebP · Max 5 MB</span>
+                      <input type="file" id="msg-image" accept="image/jpeg,image/png,image/webp,image/gif" hidden/>
+                      <div class="upload-placeholder" id="upload-placeholder">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="upload-icon">
+                          <path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                        <span class="upload-label">Kliknij lub przeciągnij plik</span>
+                        <span class="upload-hint">JPG, PNG, WebP · Max 5 MB</span>
+                      </div>
+                      <img id="upload-preview" class="upload-preview hidden" alt="Podgląd grafiki"/>
+                      <button type="button" id="upload-remove" class="upload-remove hidden">✕</button>
                     </div>
-                    <img id="upload-preview" class="upload-preview hidden" alt="Podgląd grafiki"/>
-                    <button type="button" id="upload-remove" class="upload-remove hidden">✕</button>
                   </div>
                 </div>
               </div>
             </div>
+            </div>
 
+            <div class="form-grid-right">
             <!-- Prawa kolumna: ustawienia -->
             <div class="form-col">
               <div class="form-card">
@@ -313,7 +324,6 @@
                   </div>
                 </div>
               </div>
-
               <div class="form-actions">
                 <div id="form-error" class="error-msg hidden"></div>
                 <div id="form-success" class="success-msg hidden"></div>
@@ -324,6 +334,7 @@
                   <span id="submit-label">Opublikuj komunikat</span>
                 </button>
               </div>
+            </div>
             </div>
           </div>
         </form>

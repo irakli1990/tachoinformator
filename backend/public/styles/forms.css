@@ -57,13 +57,11 @@
 .empty-state p { font-size: 14px; }
 
 /* ─── FORM CARD ────────────────────────────────────────────── */
-.form-grid {
-  display: grid;
-  grid-template-columns: 1fr 350px;
-  gap: 20px;
-  align-items: start;
+@media (max-width: 900px) {
+  .main-form {
+    grid-template-columns: 1fr;
+  }
 }
-@media (max-width: 900px) { .form-grid { grid-template-columns: 1fr; } }
 
 .form-card {
   background: var(--white);
@@ -81,8 +79,24 @@
   border-bottom: 1px solid var(--gray-100);
 }
 
-.form-actions { display: flex; flex-direction: column; gap: 10px; }
+.main-form {
+  display: grid;
+  grid-template-columns: 1fr 350px;
+  gap: 20px;
+  align-items: start;
+}
 
+.form-grid,
+.form-grid-right {
+  display: block;
+}
+
+.form-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+}
 /* ─── ERRORS / SUCCESS ─────────────────────────────────────── */
 .error-msg {
   background: #FEE2E2;
@@ -260,5 +274,3 @@
 .btn-full { width: 100%; justify-content: center; padding: 12px 24px; font-size: 14px; margin: 5px; }
 
 .btn-icon { width: 16px; height: 16px; }
-
-
