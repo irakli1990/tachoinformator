@@ -43,7 +43,7 @@ export async function loadKeys() {
       keyRow.innerHTML = `
         <span class="key-num">${key.row_num}</span>
         <span class="key-label">${key.secret_key}</span>
-        <span class="key-date">${key.created_at}</span>
+        <span class="key-date">${key.created_at.slice(0, 10)} | ${key.created_at.slice(11, 16)}</span>
         <span class="key-status">${key.status}</span>
         <button type="button"
                 class="action-btn action-copy"
