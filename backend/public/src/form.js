@@ -6,6 +6,7 @@ import { clearUploadPreview } from './upload.js';
 
 export function setupMessageForm() {
   document.getElementById('message-form').addEventListener('submit', submitForm);
+  setupImageToggle();
 }
 
 export function resetForm() {
@@ -25,6 +26,8 @@ export function resetForm() {
   clearUploadPreview();
   document.getElementById('form-error').classList.add('hidden');
   document.getElementById('form-success').classList.add('hidden');
+  document.getElementById('msg-has-image').checked = false;
+  document.getElementById('image-upload-wrapper').classList.add('hidden');
 }
 
 export async function submitForm(e) {
@@ -54,7 +57,10 @@ export async function submitForm(e) {
   formData.append('show_push',            document.getElementById('msg-push').checked);
   formData.append('is_active',            document.getElementById('msg-active').checked);
 
-  if (state.selectedFile) formData.append('image', state.selectedFile);
+  const hasImage = document.getElementById('msg-has-image').checked;
+  if (hasImage && state.selectedFile) {
+    formData.append('image', state.selectedFile);
+  }
 
   try {
     const url    = state.editingId ? `${API}/messages/${state.editingId}` : `${API}/messages`;
@@ -76,4 +82,19 @@ export async function submitForm(e) {
     btn.disabled = false;
     document.getElementById('submit-label').textContent = state.editingId ? 'Zapisz zmiany' : 'Opublikuj komunikat';
   }
+}
+
+function setupImageToggle() {
+  const checkbox = document.getElementById('msg-has-image');
+  const wrapper  = document.getElementById('image-upload-wrapper');
+
+  checkbox.addEventListener('change', () => {
+    if (checkbox.checked) {
+      wrapper.classList.remove('hidden');
+    } else {
+      wrapper.classList.add('hidden');
+      state.selectedFile = null;
+      clearUploadPreview();
+    }
+  });
 }
