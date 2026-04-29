@@ -310,7 +310,12 @@ app.post('/api/keys', requireAuth, (req, res) => {
   const { page, limit } = req.body;
   try {
     const keys = db.getDb().prepare(`
-    SELECT id, status, secret_key
+    SELECT 
+      id, 
+      status, 
+      secret_key,
+      strftime('%Y-%m-%d %H:%M', created_at, 'localtime') AS created_at,
+      ROW_NUMBER() OVER (ORDER BY status ASC, id DESC) AS row_num
     FROM keys
     ORDER BY status ASC, id DESC
     LIMIT ? OFFSET ?;

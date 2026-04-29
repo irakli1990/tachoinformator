@@ -41,8 +41,9 @@ export async function loadKeys() {
       keyRow.dataset.id = key.id;
 
       keyRow.innerHTML = `
+        <span class="key-num">${key.row_num}</span>
         <span class="key-label">${key.secret_key}</span>
-        <span class="key-date">${key.id}</span>
+        <span class="key-date">${key.created_at}</span>
         <span class="key-status">${key.status}</span>
         <button type="button"
                 class="action-btn action-copy"
