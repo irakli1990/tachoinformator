@@ -18,6 +18,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
     ipcRenderer.on('show-detail', (event, msgId) => callback(msgId));
   },
 
+  onMessagesUpdated: (callback) => ipcRenderer.on('messages-updated', callback),
+
   // URL bazowy API (dla obrazków)
   apiBase: 'http://localhost:3000'
 });

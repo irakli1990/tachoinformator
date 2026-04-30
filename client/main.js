@@ -311,6 +311,10 @@ async function checkAndNotify(force = false) {
   try {
     const messages = await fetchMessages();
 
+     if (messagesWindow && !messagesWindow.isDestroyed()) {
+      messagesWindow.webContents.send('messages-updated');
+    }
+
     if (!messages || messages.length === 0) {
       updateTrayMenu(0);
       return;

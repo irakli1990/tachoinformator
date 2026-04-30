@@ -38,7 +38,7 @@
     },
     "win": {
       "target": "nsis",
-      "icon": "assets/tray-icon.ico"
+      "icon": "assets/ikona.ico"
     },
     "nsis": {
       "oneClick": false,

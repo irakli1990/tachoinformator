@@ -7,15 +7,13 @@ const API = window.electronAPI ? window.electronAPI.apiBase : 'http://localhost:
 
 let allMessages = [];
 let currentDetailId = null;
-let refreshInterval = null;
+// let refreshInterval = null;
 
 // ─── Init ──────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   setupButtons();
   setupIPCListeners();
   loadMessages();
-
-  startAutoRefresh();
 });
 
 // ─── Przyciski ─────────────────────────────────────────────────────────────
@@ -48,6 +46,10 @@ function setupIPCListeners() {
   window.electronAPI?.onShowDetail((msgId) => {
     const msg = allMessages.find(m => m.id === msgId);
     if (msg) openDetail(msg);
+  });
+
+  window.electronAPI?.onMessagesUpdated(() => {
+    loadMessages();
   });
 }
 
@@ -198,18 +200,18 @@ function openDetail(msg) {
 
 // ─── Refresh ──────────────────────────────────────────────────────────────
 
-function startAutoRefresh() {
-  if (refreshInterval) {
-    clearInterval(refreshInterval);
-  }
+// function startAutoRefresh() {
+//   if (refreshInterval) {
+//     clearInterval(refreshInterval);
+//   }
 
-  refreshInterval = setInterval(() => {
-    const listView = document.getElementById('view-list');
-    if (listView.classList.contains('active')) {
-      loadMessages();
-    }
-  }, 1500); 
-}
+//   refreshInterval = setInterval(() => {
+//     const listView = document.getElementById('view-list');
+//     if (listView.classList.contains('active')) {
+//       loadMessages();
+//     }
+//   }, 1500); 
+// }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────
 function escHtml(str) {
