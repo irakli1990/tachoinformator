@@ -19,6 +19,7 @@ export function resetForm() {
   document.getElementById('msg-time').value      = '10:00';
   document.getElementById('msg-duration').value  = '7';
   document.getElementById('msg-frequency').value = '1x_daily';
+  document.getElementById('msg-interval').value = '01:00';
   document.getElementById('msg-push').checked    = true;
   document.getElementById('msg-active').checked  = true;
 
@@ -48,13 +49,14 @@ export async function submitForm(e) {
   btn.querySelector('#submit-label').textContent = state.editingId ? 'Zapisywanie…' : 'Publikowanie…';
 
   const formData = new FormData();
-  formData.append('headline',             headline);
-  formData.append('description',          description);
+  formData.append('headline',              headline);
+  formData.append('description',           description);
   formData.append('display_duration_days', document.getElementById('msg-duration').value);
-  formData.append('display_frequency',    document.getElementById('msg-frequency').value);
-  formData.append('display_time',         document.getElementById('msg-time').value);
-  formData.append('show_push',            document.getElementById('msg-push').checked);
-  formData.append('is_active',            document.getElementById('msg-active').checked);
+  formData.append('display_frequency',     document.getElementById('msg-frequency').value);
+  formData.append('display_interval',      document.getElementById('msg-interval').value);
+  formData.append('display_time',          document.getElementById('msg-time').value);
+  formData.append('show_push',             document.getElementById('msg-push').checked);
+  formData.append('is_active',             document.getElementById('msg-active').checked);
 
   const hasImage = document.getElementById('msg-has-image').checked;
   if (hasImage && state.selectedFile) {
@@ -98,6 +100,12 @@ export function setupImageToggle() {
   });
 }
 
-export function setupFrequencyToggle() {
+export function setupMessageInterval() {
+  const messageFrequency = document.getElementById('msg-frequency');
+  const messageInterval = document.getElementById('msg-interval');
 
+  messageFrequency.addEventListener('change', () => {
+    if (messageFrequency.selectedIndex > 0) messageInterval.parentElement.classList.remove('hidden');
+    else messageInterval.parentElement.classList.add('hidden');
+  })
 }

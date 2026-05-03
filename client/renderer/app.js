@@ -56,7 +56,7 @@ function setupIPCListeners() {
 // ─── Widoki ────────────────────────────────────────────────────────────────
 function showView(viewName) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-  const el = document.getElementById(`view-${viewName}`);
+  const el = document.getElementById(`Pview-${viewName}`);
   if (el) el.classList.add('active');
 }
 
