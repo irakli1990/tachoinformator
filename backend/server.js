@@ -4,7 +4,6 @@ const path = require('path');
 const multer = require('multer');
 const fs = require('fs');
 const db = require('./database');
-const { mainModule } = require('process');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -32,6 +31,40 @@ const storage = multer.diskStorage({
   }
 });
 
+const supportStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const uploadDir = path.join(__dirname, 'uploads');
+
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+
+    cb(null, uploadDir);
+  },
+
+  filename: (req, file, cb) => {
+    const uploadDir = path.join(__dirname, 'uploads');
+
+    const safeName = file.originalname.replace(
+      /[^a-zA-Z0-9ąćęłńóśźżĄĆĘŁŃÓŚŹŻ._ -]/g,
+      '_'
+    );
+
+    const ext = path.extname(safeName);
+    const baseName = path.basename(safeName, ext);
+
+    let finalName = safeName;
+    let counter = 1;
+
+    while (fs.existsSync(path.join(uploadDir, finalName))) {
+      finalName = `${baseName} (${counter})${ext}`;
+      counter++;
+    }
+
+    cb(null, finalName);
+  }
+});
+
 const fileFilter = (req, file, cb) => {
   const allowed = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
   if (allowed.includes(file.mimetype)) cb(null, true);
@@ -42,6 +75,11 @@ const upload = multer({
   storage,
   fileFilter,
   limits: { fileSize: 5 * 1024 * 1024 } // 5MB
+});
+
+const supportUpload = multer({
+  storage: supportStorage,
+  limits: { fileSize: 20 * 1024 * 1024 } // 20MB
 });
 
 // ─── Middleware ────────────────────────────────────────────────────────────
@@ -184,40 +222,68 @@ app.put('/api/messages/:id', requireAuth, upload.single('image'), (req, res) => 
   try {
     const id = Number(req.params.id);
     const existing = db.getMessageById(id);
+
     if (!existing) {
       if (req.file) fs.unlinkSync(req.file.path);
       return res.status(404).json({ error: 'Nie znaleziono komunikatu' });
     }
 
+    const {
+      headline,
+      description,
+      display_duration_days,
+      display_frequency,
+      display_time,
+      show_push,
+      is_active
+    } = req.body;
+
     let image_url = existing.image_url;
-    if (req.file) {
-      // Usuń starą grafikę jeśli istnieje
+
+    const removeImage = req.body.remove_image === 'true';
+
+    if (removeImage) {
       if (existing.image_url) {
         const oldPath = path.join(__dirname, existing.image_url);
-        if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+        if (fs.existsSync(oldPath)) {
+          fs.unlinkSync(oldPath);
+        }
       }
+      image_url = null;
+    }
+
+    if (req.file) {
+      if (existing.image_url) {
+        const oldPath = path.join(__dirname, existing.image_url);
+        if (fs.existsSync(oldPath)) {
+          fs.unlinkSync(oldPath);
+        }
+      }
+
       image_url = `/uploads/${req.file.filename}`;
     }
 
-    const { headline, description, display_duration_days, display_frequency,
-            display_time, show_push, is_active } = req.body;
-
     const updated = db.updateMessage(id, {
-      headline, description, image_url,
-      display_duration_days: display_duration_days ? Number(display_duration_days) : undefined,
-      display_frequency, display_time,
+      headline,
+      description,
+      image_url,
+      display_duration_days: display_duration_days
+        ? Number(display_duration_days)
+        : undefined,
+      display_frequency,
+      display_time,
       show_push: show_push !== undefined ? show_push !== 'false' : undefined,
       is_active: is_active !== undefined ? is_active !== 'false' : undefined
     });
 
     notifyClients('messages_updated');
+
     res.json(updated);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Błąd podczas edycji komunikatu' });
   }
 });
-
 app.patch('/api/messages/:id/toggle', requireAuth, (req, res) => {
   try {
     const msg = db.toggleMessage(Number(req.params.id));
@@ -235,7 +301,6 @@ app.delete('/api/messages/:id', requireAuth, (req, res) => {
     const msg = db.getMessageById(id);
     if (!msg) return res.status(404).json({ error: 'Nie znaleziono komunikatu' });
 
-    // Usuń plik grafiki jeśli istnieje
     if (msg.image_url) {
       const filePath = path.join(__dirname, msg.image_url);
       if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
@@ -268,7 +333,7 @@ function generateKey() {
 app.post('/api/keys/generate', requireAuth, (req, res) => {
   try {
     const { count } = req.body;
-
+    
     const inserted = [];
 
     const stmt = db.getDb().prepare(`
@@ -314,7 +379,7 @@ app.post('/api/keys', requireAuth, (req, res) => {
       id, 
       status, 
       secret_key,
-      strftime('%Y-%m-%d %H:%M', created_at, 'localtime') AS created_at,
+      created_at,
       ROW_NUMBER() OVER (ORDER BY status ASC, id DESC) AS row_num
     FROM keys
     ORDER BY status ASC, id DESC
@@ -385,6 +450,7 @@ app.post('/api/keys/tabs', requireAuth, (req, res) => {
   }
 });
 
+
 // ─── Keys overflow API ────────────────────────────────────────────────────
 app.get('/api/keys/overflow', requireAuth, (req, res) => {
   try {
@@ -444,19 +510,154 @@ app.get('/api/events', (req, res) => {
   });
 });
 
-// ─── Catch-all: SPA ───────────────────────────────────────────────────────
-app.get('*', (req, res) => {
-  if (req.path.startsWith('/api/')) {
-    return res.status(404).json({ error: 'Endpoint nie istnieje' });
-  }
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
-
 // ─── Start ────────────────────────────────────────────────────────────────
 app.listen(PORT, () => {
   console.log(`\nInfo Tachospeed Backend uruchomiony`);
   console.log(`   API:          http://localhost:${PORT}/api`);
-  console.log(`   Panel Admin:  http://localhost:${PORT}/`);
+//   console.log(`   Panel Admin:  http://localhost:${PORT}/`);
   console.log(`   Dozwolona domena: ${ALLOWED_DOMAIN}`);
   console.log(`   Produkt:      Info Tachospeed\n`);
+});
+
+// ─── Support Center ───────────────────────────────────────────────────────
+app.post(
+  '/api/support/upload',
+  supportUpload.array('files'),
+  (req, res) => {
+    try {
+      const { name, email, description } = req.body;
+      const files = req.files;
+
+      if (!files || files.length === 0) {
+        return res.status(400).json({
+          error: 'No files uploaded'
+        });
+      }
+
+      const nextId = db.getDb().prepare(`
+        SELECT COALESCE(MAX(report_id), 0) + 1 AS id
+        FROM supportFiles
+      `).get().id;
+
+      const stmt = db.getDb().prepare(`
+        INSERT INTO supportFiles
+        (report_id, created_by, created_by_email, description, file_path)
+        VALUES (?, ?, ?, ?, ?)
+      `);
+
+      for (const file of files) {
+        stmt.run(
+          nextId,
+          name,
+          email,
+          req.body.description,
+          `/uploads/${file.filename}`
+        );
+      }
+
+      res.status(201).json({
+        success: true,
+        uploaded: files.length
+      });
+
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({
+        error: 'Error sending files'
+      });
+    }
+});
+
+app.get('/api/support/uploads', requireAuth, (req, res) => {
+  try {
+    const files = db.getDb().prepare(`
+    SELECT 
+      id, 
+      report_id,
+      created_by, 
+      created_by_email,
+      description,
+      file_path,
+      status,
+      created_at
+    FROM supportFiles;
+  `).all();
+    res.json(files);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error fetching files' });
+  }
+});
+
+app.get('/download/:filename', (req, res) => {
+    const file = path.join(__dirname, 'uploads', req.params.filename);
+    res.download(file);
+});
+
+app.patch('/api/support/reports/:reportId/read', (req, res) => {
+    const reportId = req.params.reportId;
+
+    const stmt = db.getDb().prepare(`
+        UPDATE supportFiles
+        SET status = 'Odczytane'
+        WHERE report_id = ?
+    `);
+
+    stmt.run(reportId);
+
+    res.sendStatus(200);
+});
+
+app.get('/api/support/uploadCount', requireAuth, (req, res) => {
+  try {
+    const files = db.getDb().prepare(`
+    SELECT 
+      count(DISTINCT report_id) AS total,
+      count(DISTINCT CASE WHEN status = 'Odczytane' THEN report_id END) AS read,
+      count(DISTINCT CASE WHEN status != 'Odczytane' THEN report_id END) AS new
+    FROM supportFiles;
+  `).get();
+    res.json(files);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error fetching files' });
+  }
+});
+
+app.delete('/api/support/reports/:id', requireAuth, (req, res) => {
+  try {
+    const reportId = req.params.id;
+
+    const database = db.getDb();
+
+    const files = database.prepare(`
+      SELECT file_path FROM supportFiles WHERE report_id = ?
+    `).all(reportId);
+
+    database.prepare(`
+      DELETE FROM supportFiles WHERE report_id = ?
+    `).run(reportId);
+
+    const fs = require('fs');
+    const path = require('path');
+
+    const uploadsDir = path.join(__dirname, '..', 'uploads');
+
+    for (const f of files) {
+        if (!f.file_path) continue;
+
+        const fullPath = path.join(__dirname, f.file_path);
+
+        try {
+            fs.unlinkSync(fullPath);
+        } catch (e) {
+            console.warn("File not found:", fullPath);
+        }
+    }
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to delete report' });
+  }
 });

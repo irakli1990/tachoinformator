@@ -1,5 +1,10 @@
-node_modules
-dist
-clientpulse.db
-clientpulse.db-shm
-clientpulse.db-wal
+node_modules/
+dist/
+backend/clientpulse.db
+backend/clientpulse.db-shm
+backend/clientpulse.db-wal
+<<<<<<< HEAD
+uploads/
+=======
+backend/uploads/
+>>>>>>> ceee71529cdb917a8cee332f5418d0d6970b910c

@@ -1,0 +1,210 @@
+.info-cards{
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    gap: 20px;
+}
+
+.upload-info-card{
+    background: var(--white);
+    border-radius: var(--radius);
+    border: 1.5px solid var(--gray-100);
+    padding: 20px;
+    line-height: 20px;
+    flex: 1;
+}
+
+.report-list-card{
+    background: var(--white);
+    border-radius: var(--radius);
+    border: 1.5px solid var(--gray-100);
+    line-height: 20px;
+    margin-top: 20px;
+    overflow-y: auto;
+    max-height: 70vh;
+}
+
+.report-list-header{
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin: 20px;
+    gap: 16px;
+}
+
+.report-table{
+    width: 100%;
+    border-collapse: collapse;
+    & tr{
+        display: flex;
+        width: 100%;
+        justify-content: space-between;
+        & td, th{
+            width: 200px;
+            flex: 1;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        & .descLabel{
+            display: flex;
+            justify-content: flex-end;
+        }
+        & .description{
+            display: flex;
+            justify-content: flex-start;
+            padding-left: 20px;
+        }
+        & .downloadBtnBox{
+            float: right;
+        }
+        & th {
+            position: sticky;
+            top: 0;
+            font-weight: 100;
+            background-color: rgb(245, 245, 245);
+        }
+    }
+    & thead{
+        position: sticky;
+        top: 0;
+        background: white; 
+        z-index: 2;
+    };
+}
+
+.report-row td {
+    border-bottom: 1px solid #ddd;
+}
+
+.report-row.open td {
+    border-bottom: none;
+}
+
+.report-expanded-row td {
+    border-bottom: 1px solid #ddd;
+    background: #f8f8f8;
+}
+
+.report-list-none{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    height: 200px;
+}
+
+.report-search{
+    background: var(--white);
+    border-radius: var(--radius);
+    border: 1.5px solid var(--gray-100);
+    padding: 20px;
+    height: 30px;
+}
+
+.showBtnBox{
+    display: flex;
+    justify-content: center;
+}
+
+.showFilesBtn{
+    background-color: #DC2626;
+    justify-content: center;
+    padding: 10px 20px;
+    font-size: 14px;
+    margin: 5px;
+    background: var(--red);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(196, 30, 58, .3);
+    border: none;
+    border-radius: var(--radius);
+    cursor: pointer;
+}
+
+.showFilesBtn:hover{
+    background: var(--red-dark);
+    box-shadow: 0 4px 14px rgba(196, 30, 58, .4);
+}
+
+.fileDownload{
+    list-style-type: none;
+    word-wrap: break-word;
+    max-width: 20vw;
+}
+
+.fileDownload > a:hover{
+    color: var(--red);
+}
+
+.description{
+    white-space: normal;
+    word-wrap: break-word;
+    overflow: auto;
+    max-height: 33vh;
+    padding-left: 20px;
+}
+
+.new{
+    color: green;
+    font-weight: 600;
+}
+
+.read{
+    color: var(--red);
+    font-weight: 600;
+}
+
+.deleteBtn{
+    background: #FEE2E2;
+    color: #DC2626;
+    border-color: #FECACA;
+    width: 34px;
+    height: 34px;
+    border: 1.5px solid var(--gray-200);
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--gray-500);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition);
+    flex-shrink: 0;
+    margin: 5px;
+}
+
+.deleteBtn:hover{
+    background: #FEE2E2;
+    color: #DC2626;
+    border-color: #FECACA;
+}
+
+.downloadAllBtn{
+    background-color: white;
+    width: 80px;
+    height: 40px;
+    border: 1.5px solid var(--gray-200);
+    border-radius: var(--radius-sm);
+    color: black;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition);
+    flex-shrink: 0;
+}
+
+.downloadAllBtn:hover{
+    background: #e4e2fe;
+    color: blue;
+    border-color: #dccafe;
+}
+
+.expandedContent{
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    gap: 50px;
+}

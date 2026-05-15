@@ -1,0 +1,53 @@
+/* ─── Design Tokens ──────────────────────────────────────────────────────── */
+:root {
+  --white:      #FFFFFF;
+  --red:        #D32F2F;
+  --red-dark:   #B71C1C;
+  --red-light:  #FFEBEE;
+  --red-mid:    #EF5350;
+  --gray-50:    #FAFAFA;
+  --gray-100:   #F5F5F5;
+  --gray-200:   #EEEEEE;
+  --gray-300:   #E0E0E0;
+  --gray-400:   #BDBDBD;
+  --gray-500:   #9E9E9E;
+  --gray-700:   #616161;
+  --gray-900:   #212121;
+  --shadow-sm:  0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.05);
+  --shadow-md:  0 4px 16px rgba(0,0,0,.10), 0 2px 6px rgba(0,0,0,.06);
+  --shadow-lg:  0 12px 40px rgba(0,0,0,.13);
+  --radius:     12px;
+  --radius-sm:  8px;
+  --font:       'DM Sans', sans-serif;
+  --font-mono:  'DM Mono', monospace;
+  --tr:         180ms cubic-bezier(.4,0,.2,1);
+}
+
+/* ─── Reset ──────────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+body {
+  font-family: var(--font);
+  background: var(--gray-100);
+  color: var(--gray-900);
+  min-height: 100vh;
+}
+
+/* ─── Spinner ────────────────────────────────────────────────────────────── */
+.spinner {
+  width: 18px; height: 18px;
+  border: 2px solid rgba(255,255,255,.4);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: none; }
+}

@@ -1,4 +1,4 @@
-# Info Tachospeed
+# Tachospeed Support Center
 
 > Narzędzie do komunikacji marketingowej z klientami — instalowane wraz z produktem, działające w zasobniku systemowym Windows.
 > Domena: **@infolab.pl** | Sieć: **wewnętrzna LAN**
@@ -6,9 +6,33 @@
 ## Architektura
 
 ```
-client-pulse/
+tachospeed-support-center/
+│
+├── admin/            # Aplikacja administracyjna
+│   └── src/
+│       ├── components/
+│       ├── pages/
+│       ├── assets/
+│       ├── context/
+│       └── styles/
+│
 ├── backend/          # Serwer API + Panel Administracyjny (Node.js + Express + SQLite)
-└── client/           # Aplikacja kliencka (Electron — system tray)
+│   └── uploads/
+│
+├── client/           # Aplikacja kliencka (Electron — system tray)
+│   └── src/
+│       ├── components/
+│       ├── assets/
+│       ├── views/
+│       └── styles/
+│ 
+├── tech-support/     # Aplikacja kliencka (Support)
+│   └── client/
+│       └── src/
+│           ├── shared/
+│           └── upload/
+│
+└── README.md
 ```
 
 ## Szybki start
@@ -21,7 +45,32 @@ npm install
 npm start
 ```
 
-Panel administracyjny dostępny pod: **http://localhost:3000**
+### 2. Aplikacja administracyjna
+
+```bash
+cd admin
+npm install
+npm run dev
+```
+
+### 3. Aplikacja kliencka Electron
+
+```bash
+cd client
+npm install
+npm run dev
+```
+
+### 4. # Aplikacja kliencka Support
+
+```bash
+cd .\tech-support\client
+npm install
+npm run dev
+```
+
+Panel administracyjny dostępny pod: **http://localhost:3000**.
+Po odpaleniu którejś z aplikacji **http://localhost:5173** i następna włączona aplikacja będzie mieć **http://localhost:5174**. 
 
 **Konta testowe (zaloguj się przez przeglądarkę):**
 - `admin@infolab.pl`
@@ -30,14 +79,6 @@ Panel administracyjny dostępny pod: **http://localhost:3000**
 
 > Każdy adres z domeną `@infolab.pl` jest automatycznie akceptowany.  
 > Hasło nie jest wymagane — narzędzie wewnętrzne dostępne tylko w sieci firmowej.
-
-### 2. Aplikacja kliencka Electron
-
-```bash
-cd client
-npm install
-npm start
-```
 
 Ikona **Info Tachospeed** pojawi się w zasobniku systemowym (system tray).  
 ✅ **Auto-start z Windows** jest włączony domyślnie.

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self' http://localhost:3000; img-src 'self' http://localhost:3000 data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com"/>
+  <title>Tachospeed Support Center</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<!-- ══════════════ WIDOK: Lista komunikatów ══════════════ -->
+<div id="view-list" class="view active">
+  <header class="app-header">
+    <div class="header-left">
+      <div class="app-logo">
+        <img class="logo" src="../../admin/logo/logo-white.png" alt="logo">
+      </div>
+    </div>
+    <div class="header-right">
+      <span id="msg-count" class="msg-count"></span>
+      <button id="btn-refresh" class="icon-btn" title="Odśwież">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+        </svg>
+      </button>
+      <button id="btn-close" class="icon-btn close-btn" title="Zamknij">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <div id="list-content" class="list-content">
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Ładowanie komunikatów…</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ WIDOK: Szczegół komunikatu ══════════════ -->
+<div id="view-detail" class="view">
+  <header class="app-header">
+    <div class="header-left">
+      <button id="btn-back" class="back-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M15 19l-7-7 7-7"/>
+        </svg>
+        Wróć do listy
+      </button>
+    </div>
+    <div class="header-right">
+      <button id="btn-close-detail" class="icon-btn close-btn" title="Zamknij">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <div id="detail-content" class="detail-content">
+    <!-- Wypełniane dynamicznie -->
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

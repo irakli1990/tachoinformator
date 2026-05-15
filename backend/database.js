@@ -21,7 +21,7 @@ function initSchema() {
       email TEXT UNIQUE NOT NULL,
       name TEXT NOT NULL,
       department TEXT NOT NULL DEFAULT 'BOK',
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      created_at DATETIME DEFAULT (datetime('now', 'localtime'))
     );
 
     CREATE TABLE IF NOT EXISTS messages (
@@ -32,9 +32,10 @@ function initSchema() {
       is_active INTEGER NOT NULL DEFAULT 1,
       display_duration_days INTEGER NOT NULL DEFAULT 7,
       display_frequency TEXT NOT NULL DEFAULT '1x_daily',
-      display_time TEXT NOT NULL DEFAULT '10:00',
+      display_interval TIME NOT NULL DEFAULT '01:00',
+      display_time TIME NOT NULL DEFAULT '10:00',
       show_push INTEGER NOT NULL DEFAULT 1,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      created_at DATETIME DEFAULT (datetime('now', 'localtime')),
       expires_at DATETIME,
       created_by TEXT NOT NULL
     );
@@ -43,7 +44,18 @@ function initSchema() {
       id INTEGER PRIMARY KEY AUTOINCREMENT not NULL, 
       status varchar(15) not NULL DEFAULT "Wygenerowany", 
       secret_key varchar(8) not NULL,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      created_at DATETIME DEFAULT (datetime('now', 'localtime'))
+    );
+
+    CREATE TABLE IF NOT EXISTS supportFiles (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      report_id INTEGER NOT NULL,
+      created_by TEXT NOT NULL,
+      created_by_email TEXT NOT NULL,
+      description TEXT NOT NULL,
+      file_path TEXT,
+      status TEXT NOT NULL DEFAULT 'Nowe',
+      created_at DATETIME DEFAULT (datetime('now', 'localtime'))
     );
   `);
 
@@ -119,17 +131,21 @@ function getMessageById(id) {
 
 function createMessage(data) {
   const d = getDb();
-  const expiresAt = data.display_duration_days
-    ? new Date(Date.now() + data.display_duration_days * 24 * 60 * 60 * 1000).toISOString()
-    : null;
+  
+  const [hours, mins] = (data.display_time || '10:00').split(':');
+  const secondsOffset = (parseInt(hours) * 3600) + (parseInt(mins) * 60);
+  const days = data.display_duration_days || 7;
 
   const stmt = d.prepare(`
     INSERT INTO messages
       (headline, description, image_url, is_active, display_duration_days,
-       display_frequency, display_time, show_push, expires_at, created_by)
+       display_frequency, display_time, show_push, created_by, 
+       created_at, expires_at)
     VALUES
       (@headline, @description, @image_url, @is_active, @display_duration_days,
-       @display_frequency, @display_time, @show_push, @expires_at, @created_by)
+       @display_frequency, @display_time, @show_push, @created_by,
+       datetime('now', 'localtime'),
+       datetime('now', 'localtime', '+' || @days || ' days', 'start of day', '+' || @secondsOffset || ' seconds'))
   `);
 
   const result = stmt.run({
@@ -137,12 +153,13 @@ function createMessage(data) {
     description: data.description,
     image_url: data.image_url || null,
     is_active: data.is_active !== undefined ? (data.is_active ? 1 : 0) : 1,
-    display_duration_days: data.display_duration_days || 7,
+    display_duration_days: days,
     display_frequency: data.display_frequency || '1x_daily',
     display_time: data.display_time || '10:00',
     show_push: data.show_push !== undefined ? (data.show_push ? 1 : 0) : 1,
-    expires_at: expiresAt,
-    created_by: data.created_by
+    created_by: data.created_by,
+    days: days,
+    secondsOffset: secondsOffset
   });
 
   return getMessageById(result.lastInsertRowid);
@@ -153,13 +170,9 @@ function updateMessage(id, data) {
   const existing = getMessageById(id);
   if (!existing) return null;
 
-  const durationDays = data.display_duration_days !== undefined
-    ? data.display_duration_days
-    : existing.display_duration_days;
-
-  const expiresAt = durationDays
-    ? new Date(new Date(existing.created_at).getTime() + durationDays * 24 * 60 * 60 * 1000).toISOString()
-    : null;
+  const days = data.display_duration_days !== undefined ? data.display_duration_days : existing.display_duration_days;
+  const [hours, mins] = (data.display_time || existing.display_time).split(':');
+  const secondsOffset = (parseInt(hours) * 3600) + (parseInt(mins) * 60);
 
   d.prepare(`
     UPDATE messages SET
@@ -171,7 +184,7 @@ function updateMessage(id, data) {
       display_frequency = @display_frequency,
       display_time = @display_time,
       show_push = @show_push,
-      expires_at = @expires_at
+      expires_at = datetime(created_at, '+' || @days || ' days', 'start of day', '+' || @secondsOffset || ' seconds')
     WHERE id = @id
   `).run({
     id,
@@ -179,11 +192,12 @@ function updateMessage(id, data) {
     description: data.description !== undefined ? data.description : existing.description,
     image_url: data.image_url !== undefined ? data.image_url : existing.image_url,
     is_active: data.is_active !== undefined ? (data.is_active ? 1 : 0) : existing.is_active,
-    display_duration_days: durationDays,
+    display_duration_days: days,
     display_frequency: data.display_frequency || existing.display_frequency,
     display_time: data.display_time || existing.display_time,
     show_push: data.show_push !== undefined ? (data.show_push ? 1 : 0) : existing.show_push,
-    expires_at: expiresAt
+    days: days,
+    secondsOffset: secondsOffset
   });
 
   return getMessageById(id);

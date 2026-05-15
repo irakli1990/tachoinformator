@@ -1,7 +1,7 @@
 {
   "name": "client-pulse-backend",
   "version": "1.0.0",
-  "description": "ClientPulse - Backend API & Admin Panel",
+  "type": "commonjs",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -12,9 +12,10 @@
     "cors": "^2.8.5",
     "express": "^4.18.2",
     "multer": "^1.4.5-lts.1",
+    "preact": "^10.29.1",
     "uuid": "^9.0.0"
   },
   "devDependencies": {
-    "nodemon": "^3.0.2"
+    "nodemon": "^3.1.14"
   }
 }
